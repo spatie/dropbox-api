@@ -6,8 +6,6 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/spatie/dropbox-api.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/dropbox-api)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/dropbox-api.svg?style=flat-square)](https://packagist.org/packages/spatie/dropbox-api)
 
-**Note:** Replace ```Alex Vanderbist``` ```AlexVanderbist``` ```alex.vanderbist@gmail.com``` ```dropbox-api``` ```A minimal implementation of Dropbox API v2``` with their correct values in [README.md](README.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md) and [composer.json](composer.json) files, then delete this line.
-
 This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
 
 ## Postcardware
