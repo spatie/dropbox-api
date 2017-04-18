@@ -3,7 +3,10 @@
     "description": "A minimal implementation of Dropbox API v2",
     "keywords": [
         "spatie",
-        "dropbox-api"
+        "dropbox-api",
+        "dropbox",
+        "api",
+        "v2"
     ],
     "homepage": "https://github.com/spatie/dropbox-api",
     "license": "MIT",
