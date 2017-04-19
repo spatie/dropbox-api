@@ -2,8 +2,8 @@
 
 namespace Spatie\Dropbox\Test;
 
-use PHPUnit\Framework\TestCase;
 use Spatie\Dropbox\Client;
+use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
 {
