@@ -226,7 +226,7 @@ class Client
      * @param string|resource $body
      *
      * @return \Psr\Http\Message\ResponseInterface
-     * 
+     *
      * @throws \Spatie\Dropbox\Exceptions\BadRequest
      */
     protected function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
@@ -244,7 +244,7 @@ class Client
             ]);
 
         } catch (ClientException $exception) {
-            if ($exception->getResponse()->getStatusCode() === 409) {
+            if (in_array($exception->getResponse()->getStatusCode(), [409, 400])) {
                 throw new BadRequest($exception->getResponse());
             }
 
@@ -272,7 +272,7 @@ class Client
                 'json' => $parameters
             ]);
         } catch (ClientException $exception) {
-            if ($exception->getResponse()->getStatusCode() === 409) {
+            if (in_array($exception->getResponse()->getStatusCode(), [409, 400])) {
                 throw new BadRequest($exception->getResponse());
             }
 
