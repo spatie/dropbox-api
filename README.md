@@ -42,6 +42,12 @@ $client = new Spatie\Dropbox\Client($authorizationToken);
 
 Look in [the source code of `Spatie\Dropbox\Client`](https://github.com/spatie/dropbox-api/blob/master/src/Client.php) to discover the methods you can use.
 
+If you do not find your favorite method, please note the the `client` property on the class is public. With the `$client` you can call any method like
+
+```php
+$client->dropbox->sdmlfskjdfmlskdf
+```
+
 ## Postcardware
 
 You're free to use this package (it's [MIT-licensed](LICENSE.md)), but if it makes it to your production environment we highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using.

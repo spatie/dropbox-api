@@ -24,7 +24,7 @@ class Client
     protected $accessToken;
 
     /** @var \GuzzleHttp\Client */
-    public $client;
+    protected $client;
 
     public function __construct(string $accessToken)
     {
@@ -255,7 +255,7 @@ class Client
      *
      * @throws \Exception
      */
-    protected function contentEndpointRequest(string $endpoint, array $arguments, $body): ResponseInterface
+    public function contentEndpointRequest(string $endpoint, array $arguments, $body): ResponseInterface
     {
         $headers['Dropbox-API-Arg'] = json_encode($arguments);
 
@@ -275,7 +275,7 @@ class Client
         return $response;
     }
 
-    protected function rpcEndpointRequest(string $endpoint, array $parameters): array
+    public function rpcEndpointRequest(string $endpoint, array $parameters): array
     {
         try {
             $response = $this->client->post("https://api.dropboxapi.com/2/{$endpoint}", [
