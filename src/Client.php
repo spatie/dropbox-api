@@ -19,6 +19,9 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
+    const HTTP_BAD_REQUEST = 400
+    const HTTP_CONFLICT = 409
+
     protected $accessToken;
 
     protected $client;
@@ -36,6 +39,7 @@ class Client
 
     /**
      * Copy a file or folder to a different location in the user's Dropbox.
+     *
      * If the source path is a folder all its contents will be copied.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-copy
@@ -70,6 +74,7 @@ class Client
 
     /**
      * Delete the file or folder at a given path.
+     *
      * If the path is a folder, all its contents will be deleted too.
      * A successful response indicates that the file or folder was deleted.
      *
@@ -106,6 +111,7 @@ class Client
 
     /**
      * Returns the metadata for a file or folder.
+     *
      * Note: Metadata for the root folder is unsupported.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_metadata
@@ -120,7 +126,9 @@ class Client
     }
 
     /**
-     * Get a temporary link to stream content of a file. This link will expire in four hours and afterwards you will get 410 Gone.
+     * Get a temporary link to stream content of a file.
+     *
+     * This link will expire in four hours and afterwards you will get 410 Gone.
      * Content-Type of the link is determined automatically by the file's mime type.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_temporary_link
@@ -138,7 +146,9 @@ class Client
 
     /**
      * Get a thumbnail for an image.
-     * This method currently supports files with the following file extensions: jpg, jpeg, png, tiff, tif, gif and bmp.
+     *
+     * This method currently supports files with the following file extensions:jpg, jpeg,
+     * png, tiff, tif, gif and bmp.
      * Photos that are larger than 20MB in size won't be converted to a thumbnail.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_thumbnail
@@ -153,16 +163,18 @@ class Client
 
         $response = $this->contentEndpointRequest('files/get_thumbnail', $arguments);
 
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     /**
-     * Starts returning the contents of a folder. If the result's ListFolderResult.has_more field is true, call
+     * Starts returning the contents of a folder.
+     *
+     * If the result's ListFolderResult.has_more field is true, call
      * list_folder/continue with the returned ListFolderResult.cursor to retrieve more entries.
      *
-     * Note: auth.RateLimitError may be returned if multiple list_folder or list_folder/continue calls with same parameters
-     * are made simultaneously by same API app for same user. If your app implements retry logic, please hold off the retry
-     * until the previous request finishes.
+     * Note: auth.RateLimitError may be returned if multiple list_folder or list_folder/continue calls
+     * with same parameters are made simultaneously by same API app for same user. If your app implements
+     * retry logic, please hold off the retry until the previous request finishes.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder
      */
@@ -178,6 +190,7 @@ class Client
 
     /**
      * Move a file or folder to a different location in the user's Dropbox.
+     *
      * If the source path is a folder all its contents will be moved.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move
@@ -194,13 +207,14 @@ class Client
 
     /**
      * Create a new file with the contents provided in the request.
+     *
      * Do not use this to upload a file larger than 150 MB. Instead, create an upload session with upload_session/start.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload
      *
-     * @param string            $path
-     * @param string            $mode
-     * @param string|resource   $contents
+     * @param string $path
+     * @param string $mode
+     * @param string|resource $contents
      *
      * @return array
      */
@@ -220,6 +234,17 @@ class Client
         return $metadata;
     }
 
+    protected function normalizePath(string $path): string
+    {
+        $path = trim($path, '/');
+
+        if ($path === '') {
+            return '';
+        }
+
+        return '/' . $path;
+    }
+
     /**
      * @param string $endpoint
      * @param array $arguments
@@ -233,7 +258,7 @@ class Client
     {
         $headers['Dropbox-API-Arg'] = json_encode($arguments);
 
-        if ($body != '') {
+        if ($body !== '') {
             $headers['Content-Type'] = 'application/octet-stream';
         }
 
@@ -244,7 +269,10 @@ class Client
             ]);
 
         } catch (ClientException $exception) {
-            if (in_array($exception->getResponse()->getStatusCode(), [409, 400])) {
+            if (in_array($exception->getResponse()->getStatusCode(), [
+                static::HTTP_BAD_REQUEST,
+                static::HTTP_CONFLICT,
+            ])) {
                 throw new BadRequest($exception->getResponse());
             }
 
@@ -254,17 +282,6 @@ class Client
         return $response;
     }
 
-    protected function normalizePath(string $path): string
-    {
-        $path = trim($path,'/');
-
-        if ($path === '') {
-            return '';
-        }
-
-        return '/'.$path;
-    }
-
     protected function rpcEndpointRequest(string $endpoint, array $parameters): array
     {
         try {
@@ -272,7 +289,10 @@ class Client
                 'json' => $parameters
             ]);
         } catch (ClientException $exception) {
-            if (in_array($exception->getResponse()->getStatusCode(), [409, 400])) {
+            if (in_array($exception->getResponse()->getStatusCode(), [
+                static::HTTP_BAD_REQUEST,
+                static::HTTP_CONFLICT,
+            ])) {
                 throw new BadRequest($exception->getResponse());
             }
 
