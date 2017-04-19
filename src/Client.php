@@ -84,9 +84,13 @@ class Client
     /**
      * Download a file from a user's Dropbox.
      *
+     * @param string $path
+     *
+     * @return resource
+     *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-download
      */
-    public function download(string $path): resource
+    public function download(string $path)
     {
         $dropboxApiArguments = [
             'path' => $this->normalizePath($path),
