@@ -2,6 +2,7 @@
 
 namespace Spatie\Dropbox;
 
+use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\StreamWrapper;
@@ -269,7 +270,7 @@ class Client
             ]);
 
         } catch (ClientException $exception) {
-            $this->handleClientException($exception);
+            throw $this->determineException($exception);
         }
 
         return $response;
@@ -282,22 +283,21 @@ class Client
                 'json' => $parameters
             ]);
         } catch (ClientException $exception) {
-            $this->handleClientException($exception);
+            throw $this->determineException($exception);
         }
 
         return json_decode($response->getBody(), true);
     }
 
-
-     protected function handleClientException(ClientException $exception)
+     protected function determineException(ClientException $exception): Exception
      {
          if (in_array($exception->getResponse()->getStatusCode(), [
              static::HTTP_BAD_REQUEST,
              static::HTTP_CONFLICT,
          ])) {
-             throw new BadRequest($exception->getResponse());
+             return new BadRequest($exception->getResponse());
          }
 
-         throw $exception;
+         return $exception;
      }
 }
