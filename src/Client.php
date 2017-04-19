@@ -3,10 +3,10 @@
 namespace Spatie\Dropbox;
 
 use Exception;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\StreamWrapper;
+use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Exceptions\BadRequest;
 
 class Client
@@ -158,12 +158,12 @@ class Client
         $arguments = [
             'path' => $this->normalizePath($path),
             'format' => $format,
-            'size' => $size
+            'size' => $size,
         ];
 
         $response = $this->contentEndpointRequest('files/get_thumbnail', $arguments);
 
-        return (string)$response->getBody();
+        return (string) $response->getBody();
     }
 
     /**
@@ -242,10 +242,19 @@ class Client
             return '';
         }
 
-        return '/' . $path;
+        return '/'.$path;
     }
 
-    protected function contentEndpointRequest(string $endpoint, array $arguments, string $body = ''): ResponseInterface
+    /**
+     * @param string $endpoint
+     * @param array $arguments
+     * @param string|resource $body
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     *
+     * @throws \Exception
+     */
+    protected function contentEndpointRequest(string $endpoint, array $arguments, $body): ResponseInterface
     {
         $headers['Dropbox-API-Arg'] = json_encode($arguments);
 
@@ -258,7 +267,6 @@ class Client
                 'headers' => $headers,
                 'body' => $body,
             ]);
-
         } catch (ClientException $exception) {
             throw $this->determineException($exception);
         }
@@ -270,7 +278,7 @@ class Client
     {
         try {
             $response = $this->client->post("https://api.dropboxapi.com/2/{$endpoint}", [
-                'json' => $parameters
+                'json' => $parameters,
             ]);
         } catch (ClientException $exception) {
             throw $this->determineException($exception);
@@ -279,12 +287,12 @@ class Client
         return json_decode($response->getBody(), true);
     }
 
-     protected function determineException(ClientException $exception): Exception
-     {
-         if (in_array($exception->getResponse()->getStatusCode(), [400, 409])) {
-             return new BadRequest($exception->getResponse());
-         }
+    protected function determineException(ClientException $exception): Exception
+    {
+        if (in_array($exception->getResponse()->getStatusCode(), [400, 409])) {
+            return new BadRequest($exception->getResponse());
+        }
 
-         return $exception;
-     }
+        return $exception;
+    }
 }
