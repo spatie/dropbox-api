@@ -20,9 +20,6 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
-    const HTTP_BAD_REQUEST = 400
-    const HTTP_CONFLICT = 409
-
     protected $accessToken;
 
     protected $client;
@@ -291,10 +288,7 @@ class Client
 
      protected function determineException(ClientException $exception): Exception
      {
-         if (in_array($exception->getResponse()->getStatusCode(), [
-             static::HTTP_BAD_REQUEST,
-             static::HTTP_CONFLICT,
-         ])) {
+         if (in_array($exception->getResponse()->getStatusCode(), [400, 409])) {
              return new BadRequest($exception->getResponse());
          }
 
