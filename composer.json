@@ -16,6 +16,12 @@
             "email": "alex.vanderbist@gmail.com",
             "homepage": "https://spatie.be",
             "role": "Developer"
+        },
+        {
+            "name": "Freek Van der Herten",
+            "email": "freek@spatie.be",
+            "homepage": "https://spatie.be",
+            "role": "Developer"
         }
     ],
     "require": {
