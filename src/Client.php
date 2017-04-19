@@ -3,7 +3,10 @@
 namespace Spatie\Dropbox;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\StreamWrapper;
+use Psr\Http\Message\ResponseInterface;
+use Spatie\Dropbox\Exceptions\BadRequest;
 
 class Client
 {
@@ -44,7 +47,7 @@ class Client
             'to_path' => $this->normalizePath($newPath),
         ];
 
-        return $this->requestRPC('files/copy', $parameters);
+        return $this->rpcEndpointRequest('files/copy', $parameters);
     }
 
     /**
@@ -58,7 +61,7 @@ class Client
             'path' => $this->normalizePath($path),
         ];
 
-        $object = $this->requestRPC('files/create_folder', $parameters);
+        $object = $this->rpcEndpointRequest('files/create_folder', $parameters);
 
         $object['.tag'] = 'folder';
 
@@ -78,7 +81,7 @@ class Client
             'path' => $this->normalizePath($path),
         ];
 
-        return $this->requestRPC('files/delete', $parameters);
+        return $this->rpcEndpointRequest('files/delete', $parameters);
     }
 
     /**
@@ -92,15 +95,11 @@ class Client
      */
     public function download(string $path)
     {
-        $dropboxApiArguments = [
+        $arguments = [
             'path' => $this->normalizePath($path),
         ];
 
-        $response = $this->client->post('https://content.dropboxapi.com/2/files/download', [
-            'headers' => [
-                'Dropbox-API-Arg' => json_encode($dropboxApiArguments),
-            ],
-        ]);
+        $response = $this->contentEndpointRequest('files/download', $arguments);
 
         return StreamWrapper::getResource($response->getBody());
     }
@@ -117,7 +116,7 @@ class Client
             'path' => $this->normalizePath($path),
         ];
 
-        return $this->requestRPC('files/get_metadata', $parameters);
+        return $this->rpcEndpointRequest('files/get_metadata', $parameters);
     }
 
     /**
@@ -132,7 +131,7 @@ class Client
             'path' => $this->normalizePath($path),
         ];
 
-        $body = $this->requestRPC('files/get_temporary_link', $parameters);
+        $body = $this->rpcEndpointRequest('files/get_temporary_link', $parameters);
 
         return $body['link'];
     }
@@ -146,17 +145,13 @@ class Client
      */
     public function getThumbnail(string $path, string $format = 'jpeg', string $size = 'w64h64'): string
     {
-        $dropboxApiArguments = [
+        $arguments = [
             'path' => $this->normalizePath($path),
             'format' => $format,
             'size' => $size
         ];
 
-        $response = $this->client->post('https://content.dropboxapi.com/2/files/get_thumbnail', [
-            'headers' => [
-                'Dropbox-API-Arg' => json_encode($dropboxApiArguments),
-            ],
-        ]);
+        $response = $this->contentEndpointRequest('files/get_thumbnail', $arguments);
 
         return (string) $response->getBody();
     }
@@ -178,7 +173,7 @@ class Client
             'recursive' => $recursive,
         ];
 
-        return $this->requestRPC('files/list_folder', $parameters);
+        return $this->rpcEndpointRequest('files/list_folder', $parameters);
     }
 
     /**
@@ -194,7 +189,7 @@ class Client
             'to_path' => $this->normalizePath($newPath),
         ];
 
-        return $this->requestRPC('files/move', $parameters);
+        return $this->rpcEndpointRequest('files/move', $parameters);
     }
 
     /**
@@ -202,27 +197,61 @@ class Client
      * Do not use this to upload a file larger than 150 MB. Instead, create an upload session with upload_session/start.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload
+     *
+     * @param string            $path
+     * @param string            $mode
+     * @param string|resource   $contents
+     *
+     * @return array
      */
     public function upload(string $path, string $mode, $contents): array
     {
-        $dropboxApiArguments = [
+        $arguments = [
             'path' => $this->normalizePath($path),
             'mode' => $mode,
         ];
 
-        $response = $this->client->post('https://content.dropboxapi.com/2/files/upload', [
-            'headers' => [
-                'Dropbox-API-Arg' => json_encode($dropboxApiArguments),
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $contents,
-        ]);
+        $response = $this->contentEndpointRequest('files/upload', $arguments, $contents);
 
         $metadata = json_decode($response->getBody(), true);
 
         $metadata['.tag'] = 'file';
 
         return $metadata;
+    }
+
+    /**
+     * @param string $endpoint
+     * @param array $arguments
+     * @param string|resource $body
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     * 
+     * @throws \Spatie\Dropbox\Exceptions\BadRequest
+     */
+    protected function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
+    {
+        $headers['Dropbox-API-Arg'] = json_encode($arguments);
+
+        if ($body != '') {
+            $headers['Content-Type'] = 'application/octet-stream';
+        }
+
+        try {
+            $response = $this->client->post("https://content.dropboxapi.com/2/{$endpoint}", [
+                'headers' => $headers,
+                'body' => $body,
+            ]);
+
+        } catch (ClientException $exception) {
+            if ($exception->getResponse()->getStatusCode() === 409) {
+                throw new BadRequest($exception->getResponse());
+            }
+
+            throw $exception;
+        }
+
+        return $response;
     }
 
     protected function normalizePath(string $path): string
@@ -236,11 +265,19 @@ class Client
         return '/'.$path;
     }
 
-    protected function requestRPC(string $endpoint, array $parameters): array
+    protected function rpcEndpointRequest(string $endpoint, array $parameters): array
     {
-        $response = $this->client->post("https://api.dropboxapi.com/2/{$endpoint}", [
-            'json' => $parameters
-        ]);
+        try {
+            $response = $this->client->post("https://api.dropboxapi.com/2/{$endpoint}", [
+                'json' => $parameters
+            ]);
+        } catch (ClientException $exception) {
+            if ($exception->getResponse()->getStatusCode() === 409) {
+                throw new BadRequest($exception->getResponse());
+            }
+
+            throw $exception;
+        }
 
         return json_decode($response->getBody(), true);
     }
