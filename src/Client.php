@@ -20,8 +20,10 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
+    /** @var string */
     protected $accessToken;
 
+    /** @var GuzzleClient */
     protected $client;
 
     public function __construct(string $accessToken)
@@ -243,16 +245,7 @@ class Client
         return '/' . $path;
     }
 
-    /**
-     * @param string $endpoint
-     * @param array $arguments
-     * @param string|resource $body
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     *
-     * @throws \Spatie\Dropbox\Exceptions\BadRequest
-     */
-    protected function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
+    protected function contentEndpointRequest(string $endpoint, array $arguments, string $body = ''): ResponseInterface
     {
         $headers['Dropbox-API-Arg'] = json_encode($arguments);
 
