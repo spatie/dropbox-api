@@ -245,7 +245,16 @@ class Client
         return '/' . $path;
     }
 
-    protected function contentEndpointRequest(string $endpoint, array $arguments, string $body = ''): ResponseInterface
+    /**
+     * @param string $endpoint
+     * @param array $arguments
+     * @param string|resource $body
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     *
+     * @throws \Exception
+     */
+    protected function contentEndpointRequest(string $endpoint, array $arguments, $body): ResponseInterface
     {
         $headers['Dropbox-API-Arg'] = json_encode($arguments);
 
