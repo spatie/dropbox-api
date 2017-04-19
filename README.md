@@ -6,7 +6,22 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/spatie/dropbox-api.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/dropbox-api)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/dropbox-api.svg?style=flat-square)](https://packagist.org/packages/spatie/dropbox-api)
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+This is a minimal PHP implementation of the [Dropbox API v2](https://www.dropbox.com/developers/documentation/http/overview). It contains only the methods needed for [our flysystem-dropbox adapter](https://github.com/spatie/flysystem-dropbox). We are open however to PRs that add extra methods to the client. 
+
+Here are a few examples on how you can use the package:
+
+```php
+$client = new Spatie\Dropbox\Client($authorizationToken);
+
+//create a folder
+$client->createFolder($path);
+
+//list a folder
+$client->listFolder($path);
+
+//get a temporary link
+$client->getTemporaryLink($path);
+```
 
 ## Postcardware
 
@@ -26,10 +41,15 @@ composer require spatie/dropbox-api
 
 ## Usage
 
-``` php
-$Dropbox = new Spatie\Dropbox();
-echo $Dropbox->echoPhrase('Hello, Spatie!');
+The first thing you need to do is get an authorization token at Dropbox. Unlike [other companies](https://google.com) Dropbox has made this very easy. You can just generate a token in The [App Console](https://www.dropbox.com/developers/apps) for any Dropbox API app. You'll find more info at [the Dropbox Developer Blog](https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account/).
+
+With an authorization token you can instantiate a `Spatie\Dropbox\Client`.
+
+```php
+$client = new Spatie\Dropbox\Client($authorizationToken);
 ```
+
+Look in [the source code of `Spatie\Dropbox\Client`](https://github.com/spatie/dropbox-api/blob/master/src/Client.php) to discover the methods you can use.
 
 ## Changelog
 
@@ -52,6 +72,7 @@ If you discover any security related issues, please email freek@spatie.be instea
 ## Credits
 
 - [Alex Vanderbist](https://github.com/AlexVanderbist)
+- [Freek Van der Herten](https://github.com/freekmurze)
 - [All Contributors](../../contributors)
 
 ## About Spatie
