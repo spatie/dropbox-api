@@ -255,7 +255,7 @@ class Client
      *
      * @throws \Exception
      */
-    public function contentEndpointRequest(string $endpoint, array $arguments, $body): ResponseInterface
+    public function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
     {
         $headers['Dropbox-API-Arg'] = json_encode($arguments);
 
