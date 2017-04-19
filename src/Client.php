@@ -213,12 +213,12 @@ class Client
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload
      *
      * @param string $path
-     * @param string $mode
      * @param string|resource $contents
+     * @param string $mode
      *
      * @return array
      */
-    public function upload(string $path, string $mode, $contents): array
+    public function upload(string $path, $contents, string $mode = 'add'): array
     {
         $arguments = [
             'path' => $this->normalizePath($path),
