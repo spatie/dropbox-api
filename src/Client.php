@@ -23,7 +23,7 @@ class Client
     /** @var string */
     protected $accessToken;
 
-    /** @var GuzzleClient */
+    /** @var \GuzzleHttp\Client */
     public $client;
 
     public function __construct(string $accessToken)
@@ -44,18 +44,18 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-copy
      */
-    public function copy(string $path, string $newPath): array
+    public function copy(string $fromPath, string $toPath): array
     {
         $parameters = [
-            'from_path' => $this->normalizePath($path),
-            'to_path' => $this->normalizePath($newPath),
+            'from_path' => $this->normalizePath($fromPath),
+            'to_path' => $this->normalizePath($toPath),
         ];
 
         return $this->rpcEndpointRequest('files/copy', $parameters);
     }
 
     /**
-     * Create a folder at a given path.Create a folder at a given path.
+     * Create a folder at a given path.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-create_folder
      */
@@ -147,8 +147,9 @@ class Client
     /**
      * Get a thumbnail for an image.
      *
-     * This method currently supports files with the following file extensions:jpg, jpeg,
-     * png, tiff, tif, gif and bmp.
+     * This method currently supports files with the following file extensions:
+     * jpg, jpeg, png, tiff, tif, gif and bmp.
+     *
      * Photos that are larger than 20MB in size won't be converted to a thumbnail.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_thumbnail
@@ -195,11 +196,11 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move
      */
-    public function move(string $path, string $newPath): array
+    public function move(string $fromPath, string $toPath): array
     {
         $parameters = [
-            'from_path' => $this->normalizePath($path),
-            'to_path' => $this->normalizePath($newPath),
+            'from_path' => $this->normalizePath($fromPath),
+            'to_path' => $this->normalizePath($toPath),
         ];
 
         return $this->rpcEndpointRequest('files/move', $parameters);
@@ -214,11 +215,11 @@ class Client
      *
      * @param string $path
      * @param string|resource $contents
-     * @param string $mode
+     * @param string|array $mode
      *
      * @return array
      */
-    public function upload(string $path, $contents, string $mode = 'add'): array
+    public function upload(string $path, $contents, $mode = 'add'): array
     {
         $arguments = [
             'path' => $this->normalizePath($path),
