@@ -269,14 +269,7 @@ class Client
             ]);
 
         } catch (ClientException $exception) {
-            if (in_array($exception->getResponse()->getStatusCode(), [
-                static::HTTP_BAD_REQUEST,
-                static::HTTP_CONFLICT,
-            ])) {
-                throw new BadRequest($exception->getResponse());
-            }
-
-            throw $exception;
+            $this->handleClientException($exception);
         }
 
         return $response;
@@ -289,16 +282,22 @@ class Client
                 'json' => $parameters
             ]);
         } catch (ClientException $exception) {
-            if (in_array($exception->getResponse()->getStatusCode(), [
-                static::HTTP_BAD_REQUEST,
-                static::HTTP_CONFLICT,
-            ])) {
-                throw new BadRequest($exception->getResponse());
-            }
-
-            throw $exception;
+            $this->handleClientException($exception);
         }
 
         return json_decode($response->getBody(), true);
     }
+
+
+     protected function handleClientException(ClientException $exception)
+     {
+         if (in_array($exception->getResponse()->getStatusCode(), [
+             static::HTTP_BAD_REQUEST,
+             static::HTTP_CONFLICT,
+         ])) {
+             throw new BadRequest($exception->getResponse());
+         }
+
+         throw $exception;
+     }
 }
