@@ -42,10 +42,18 @@ $client = new Spatie\Dropbox\Client($authorizationToken);
 
 Look in [the source code of `Spatie\Dropbox\Client`](https://github.com/spatie/dropbox-api/blob/master/src/Client.php) to discover the methods you can use.
 
-If you do not find your favorite method, please note the the `client` property on the class is public. With the `$client` you can call any method like
+If you do not find your favorite method, you can directly use the `contentEndpointRequest` and `rpcEndpointRequest` functions.
 
 ```php
-$client->dropbox->sdmlfskjdfmlskdf
+public function contentEndpointRequest(string $endpoint, array $arguments, $body): ResponseInterface
+
+public function rpcEndpointRequest(string $endpoint, array $parameters): array
+```
+
+Here's an example:
+
+```php
+$client->rpcEndpointRequest('search', ['path' => '', 'query' => 'bat cave']);
 ```
 
 ## Postcardware
