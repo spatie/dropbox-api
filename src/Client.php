@@ -24,7 +24,7 @@ class Client
     protected $accessToken;
 
     /** @var GuzzleClient */
-    protected $client;
+    public $client;
 
     public function __construct(string $accessToken)
     {
