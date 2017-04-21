@@ -190,6 +190,21 @@ class Client
     }
 
     /**
+     * Once a cursor has been retrieved from list_folder, use this to paginate through all files and
+     * retrieve updates to the folder, following the same rules as documented for list_folder.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder-continue
+     */
+    public function listFolderContinue(string $cursor = ''): array
+    {
+        $parameters = [
+            'cursor' => $cursor,
+        ];
+
+        return $this->rpcEndpointRequest('files/list_folder/continue', $parameters);
+    }
+
+    /**
      * Move a file or folder to a different location in the user's Dropbox.
      *
      * If the source path is a folder all its contents will be moved.
