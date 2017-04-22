@@ -197,11 +197,7 @@ class Client
      */
     public function listFolderContinue(string $cursor = ''): array
     {
-        $parameters = [
-            'cursor' => $cursor,
-        ];
-
-        return $this->rpcEndpointRequest('files/list_folder/continue', $parameters);
+        return $this->rpcEndpointRequest('files/list_folder/continue', compact('cursor'));
     }
 
     /**
