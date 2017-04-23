@@ -26,15 +26,19 @@ class Client
     /** @var \GuzzleHttp\Client */
     protected $client;
 
-    public function __construct(string $accessToken)
+    public function __construct(string $accessToken, GuzzleClient $client = null)
     {
         $this->accessToken = $accessToken;
 
-        $this->client = new GuzzleClient([
-            'headers' => [
-                'Authorization' => "Bearer {$this->accessToken}",
-            ],
-        ]);
+        if ($client) {
+            $this->client = $client;
+        } else {
+            $this->client = new GuzzleClient([
+                'headers' => [
+                    'Authorization' => "Bearer {$this->accessToken}",
+                ],
+            ]);
+        }
     }
 
     /**
