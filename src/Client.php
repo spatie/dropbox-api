@@ -30,15 +30,11 @@ class Client
     {
         $this->accessToken = $accessToken;
 
-        if ($client) {
-            $this->client = $client;
-        } else {
-            $this->client = new GuzzleClient([
+        $this->client = $client ?? new GuzzleClient([
                 'headers' => [
                     'Authorization' => "Bearer {$this->accessToken}",
                 ],
             ]);
-        }
     }
 
     /**
@@ -168,7 +164,7 @@ class Client
 
         $response = $this->contentEndpointRequest('files/get_thumbnail', $arguments);
 
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     /**
@@ -258,7 +254,7 @@ class Client
             return '';
         }
 
-        return '/'.$path;
+        return '/' . $path;
     }
 
     /**

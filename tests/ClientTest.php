@@ -9,6 +9,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
+use Spatie\Dropbox\Exceptions\BadRequest;
 
 class ClientTest extends TestCase
 {
@@ -267,11 +268,7 @@ class ClientTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     *
-     * @expectedException GuzzleHttp\Exception\ClientException
-     */
+    /** @test */
     public function content_endpoint_request_can_throw_exception()
     {
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
@@ -289,14 +286,12 @@ class ClientTest extends TestCase
 
         $client = new Client('test_token', $mockGuzzle);
 
+        $this->expectException(ClientException::class);
+
         $client->contentEndpointRequest('testing/endpoint', []);
     }
 
-    /**
-     * @test
-     *
-     * @expectedException Spatie\Dropbox\Exceptions\BadRequest
-     */
+    /** @test */
     public function rpc_endpoint_request_can_throw_exception()
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
@@ -308,6 +303,7 @@ class ClientTest extends TestCase
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
                            ->setMethods(['post'])
                            ->getMock();
+
         $mockGuzzle->expects($this->once())
                    ->method('post')
                    ->willThrowException(
@@ -319,6 +315,8 @@ class ClientTest extends TestCase
                    );
 
         $client = new Client('test_token', $mockGuzzle);
+
+        $this->expectException(BadRequest::class);
 
         $client->rpcEndpointRequest('testing/endpoint', []);
     }
