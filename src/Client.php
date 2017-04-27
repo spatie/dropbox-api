@@ -164,7 +164,7 @@ class Client
 
         $response = $this->contentEndpointRequest('files/get_thumbnail', $arguments);
 
-        return (string)$response->getBody();
+        return (string) $response->getBody();
     }
 
     /**
@@ -254,7 +254,7 @@ class Client
             return '';
         }
 
-        return '/' . $path;
+        return '/'.$path;
     }
 
     /**
