@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.2.0 - 2017-04-29
+
+- added `createSharedLinkWithSettings`
+
 ## 1.1.0 - 2017-04-22
 
 - added `listFolderContinue`
