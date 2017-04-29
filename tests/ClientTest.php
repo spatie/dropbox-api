@@ -321,6 +321,24 @@ class ClientTest extends TestCase
         $client->rpcEndpointRequest('testing/endpoint', []);
     }
 
+    /** @test */
+    public function it_can_create_a_shared_link()
+    {
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode(['name' => 'math']),
+            'https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings',
+            [
+                'json' => [
+                    'path'      => '/Homework/math',
+                ],
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->assertEquals(['name' => 'math'], $client->createSharedLinkWithSettings('Homework/math'));
+    }
+
     private function mock_guzzle_request($expectedResponse, $expectedEndpoint, $expectedParams)
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)

@@ -73,6 +73,24 @@ class Client
     }
 
     /**
+     * Create a shared link with custom settings.
+     *
+     * If no settings are given then the default visibility is RequestedVisibility.public.
+     * The resolved visibility, though, may depend on other aspects such as team and
+     * shared folder settings).
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
+     */
+    public function createSharedLinkWithSettings(string $path, array $settings = [])
+    {
+        $parameters = [
+            'path' => $this->normalizePath($path),
+        ];
+
+        return $this->rpcEndpointRequest('sharing/create_shared_link_with_settings', $parameters);
+    }
+
+    /**
      * Delete the file or folder at a given path.
      *
      * If the path is a folder, all its contents will be deleted too.
