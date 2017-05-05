@@ -26,15 +26,15 @@ class Client
     /** @var \GuzzleHttp\Client */
     protected $client;
 
-    public function __construct(string $accessToken, GuzzleClient $client = null)
+    public function __construct($accessToken, GuzzleClient $client = null)
     {
         $this->accessToken = $accessToken;
 
-        $this->client = $client ?? new GuzzleClient([
-                'headers' => [
-                    'Authorization' => "Bearer {$this->accessToken}",
-                ],
-            ]);
+        $this->client = !empty($client) ? $client : new GuzzleClient([
+            'headers' => [
+                'Authorization' => "Bearer {$this->accessToken}",
+            ],
+        ]);
     }
 
     /**
@@ -44,7 +44,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-copy
      */
-    public function copy(string $fromPath, string $toPath): array
+    public function copy($fromPath, $toPath)
     {
         $parameters = [
             'from_path' => $this->normalizePath($fromPath),
@@ -59,7 +59,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-create_folder
      */
-    public function createFolder(string $path): array
+    public function createFolder($path)
     {
         $parameters = [
             'path' => $this->normalizePath($path),
@@ -81,7 +81,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
      */
-    public function createSharedLinkWithSettings(string $path, array $settings = [])
+    public function createSharedLinkWithSettings($path, array $settings = [])
     {
         $parameters = [
             'path' => $this->normalizePath($path),
@@ -98,7 +98,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-delete
      */
-    public function delete(string $path): array
+    public function delete($path)
     {
         $parameters = [
             'path' => $this->normalizePath($path),
@@ -110,13 +110,13 @@ class Client
     /**
      * Download a file from a user's Dropbox.
      *
-     * @param string $path
+     * @param $path
      *
      * @return resource
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-download
      */
-    public function download(string $path)
+    public function download($path)
     {
         $arguments = [
             'path' => $this->normalizePath($path),
@@ -134,7 +134,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_metadata
      */
-    public function getMetadata(string $path): array
+    public function getMetadata($path)
     {
         $parameters = [
             'path' => $this->normalizePath($path),
@@ -151,7 +151,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_temporary_link
      */
-    public function getTemporaryLink(string $path): string
+    public function getTemporaryLink($path)
     {
         $parameters = [
             'path' => $this->normalizePath($path),
@@ -172,7 +172,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_thumbnail
      */
-    public function getThumbnail(string $path, string $format = 'jpeg', string $size = 'w64h64'): string
+    public function getThumbnail($path, $format = 'jpeg', $size = 'w64h64')
     {
         $arguments = [
             'path' => $this->normalizePath($path),
@@ -197,7 +197,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder
      */
-    public function listFolder(string $path = '', bool $recursive = false): array
+    public function listFolder($path = '', $recursive = false)
     {
         $parameters = [
             'path' => $this->normalizePath($path),
@@ -213,7 +213,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder-continue
      */
-    public function listFolderContinue(string $cursor = ''): array
+    public function listFolderContinue($cursor = '')
     {
         return $this->rpcEndpointRequest('files/list_folder/continue', compact('cursor'));
     }
@@ -225,7 +225,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move
      */
-    public function move(string $fromPath, string $toPath): array
+    public function move($fromPath, $toPath)
     {
         $parameters = [
             'from_path' => $this->normalizePath($fromPath),
@@ -242,13 +242,13 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload
      *
-     * @param string $path
+     * @param $path
      * @param string|resource $contents
      * @param string|array $mode
      *
      * @return array
      */
-    public function upload(string $path, $contents, $mode = 'add'): array
+    public function upload($path, $contents, $mode = 'add')
     {
         $arguments = [
             'path' => $this->normalizePath($path),
@@ -264,7 +264,7 @@ class Client
         return $metadata;
     }
 
-    protected function normalizePath(string $path): string
+    protected function normalizePath($path)
     {
         $path = trim($path, '/');
 
@@ -276,7 +276,7 @@ class Client
     }
 
     /**
-     * @param string $endpoint
+     * @param $endpoint
      * @param array $arguments
      * @param string|resource $body
      *
@@ -284,7 +284,7 @@ class Client
      *
      * @throws \Exception
      */
-    public function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
+    public function contentEndpointRequest($endpoint, array $arguments, $body = '')
     {
         $headers['Dropbox-API-Arg'] = json_encode($arguments);
 
@@ -304,7 +304,7 @@ class Client
         return $response;
     }
 
-    public function rpcEndpointRequest(string $endpoint, array $parameters): array
+    public function rpcEndpointRequest($endpoint, array $parameters)
     {
         try {
             $response = $this->client->post("https://api.dropboxapi.com/2/{$endpoint}", [
@@ -317,7 +317,7 @@ class Client
         return json_decode($response->getBody(), true);
     }
 
-    protected function determineException(ClientException $exception): Exception
+    protected function determineException(ClientException $exception)
     {
         if (in_array($exception->getResponse()->getStatusCode(), [400, 409])) {
             return new BadRequest($exception->getResponse());
