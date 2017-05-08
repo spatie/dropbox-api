@@ -264,13 +264,6 @@ class Client
         return $metadata;
     }
 
-    /**
-     * Normalize path.
-     *
-     * @param string $path
-     *
-     * @return string
-     */
     protected function normalizePath(string $path): string
     {
         $path = trim($path, '/');
