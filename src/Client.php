@@ -268,11 +268,7 @@ class Client
     {
         $path = trim($path, '/');
 
-        if ($path === '') {
-            return '';
-        }
-
-        return '/'.$path;
+        return ($path === '') ? '' : '/'.$path;
     }
 
     /**
