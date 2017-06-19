@@ -321,4 +321,26 @@ class Client
 
         return $exception;
     }
+
+
+    /**
+     * List shared links of this user..
+     *
+     * If no path is given, returns a list of all shared links for the current user.
+     * If a non-empty path is given, returns a list of all shared links that allow access to the given path - direct links to the given 
+     * path and links to parent folders of the given path. Links to parent folders can be suppressed by setting direct_only to true. 
+     * The resolved visibility, though, may depend on other aspects such as team and shared folder settings).
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
+     */
+    public function listSharedLinks(string $path): array
+    {
+        $parameters = [
+            'path' => $this->normalizePath($path),
+        ];
+
+        $body = $this->rpcEndpointRequest('sharing/list_shared_links', $parameters);
+
+        return $body['links'];
+    }
 }

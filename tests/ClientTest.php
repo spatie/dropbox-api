@@ -339,6 +339,31 @@ class ClientTest extends TestCase
         $this->assertEquals(['name' => 'math'], $client->createSharedLinkWithSettings('Homework/math'));
     }
 
+    /** @test */
+    function it_can_list_shared_links()
+    {
+        
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode([
+                'name' => 'math',
+                'links' => ['url' => 'https://dl.dropboxusercontent.com/apitl/1/YXNkZmFzZGcyMzQyMzI0NjU2NDU2NDU2'],
+            ]),
+            'https://api.dropboxapi.com/2/sharing/list_shared_links',
+            [
+                'json' => [
+                    'path' => '/Homework/math',
+                ],
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->assertEquals(
+            ['url' => 'https://dl.dropboxusercontent.com/apitl/1/YXNkZmFzZGcyMzQyMzI0NjU2NDU2NDU2'],
+            $client->listSharedLinks('Homework/math')
+        );
+    }
+
     private function mock_guzzle_request($expectedResponse, $expectedEndpoint, $expectedParams)
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
