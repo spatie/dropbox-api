@@ -342,7 +342,6 @@ class ClientTest extends TestCase
     /** @test */
     function it_can_list_shared_links()
     {
-        
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode([
                 'name' => 'math',
