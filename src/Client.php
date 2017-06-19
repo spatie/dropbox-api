@@ -93,7 +93,7 @@ class Client
     /**
      * List shared links.
      *
-     * For empty path returns a list of all shared links. For non-empty path 
+     * For empty path returns a list of all shared links. For non-empty path
      * returns a list of all shared links with access to the given path.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
