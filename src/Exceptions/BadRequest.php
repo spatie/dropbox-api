@@ -10,7 +10,7 @@ class BadRequest extends Exception
     /**
      * The dropbox error code supplied in the response.
      *
-     * @var string
+     * @var string|null
      */
     public $dropboxCode;
 
