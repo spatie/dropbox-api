@@ -292,7 +292,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function rpc_endpoint_request_can_throw_exception()
+    public function rpc_endpoint_request_can_throw_exception_with_400_status_code()
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
                              ->getMock();
@@ -313,6 +313,46 @@ class ClientTest extends TestCase
                            $mockResponse
                        )
                    );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->expectException(BadRequest::class);
+
+        $client->rpcEndpointRequest('testing/endpoint', []);
+    }
+
+    /** @test */
+    public function rpc_endpoint_request_can_throw_exception_with_409_status_code()
+    {
+        $body = [
+            'error' => [
+                '.tag' => 'machine_readable_error_code',
+            ],
+            'error_summary' => 'Human readable error code',
+        ];
+
+        $mockResponse = $this->getMockBuilder(ResponseInterface::class)
+            ->getMock();
+        $mockResponse->expects($this->any())
+            ->method('getStatusCode')
+            ->willReturn(409);
+        $mockResponse->expects($this->any())
+            ->method('getBody')
+            ->willReturn(json_encode($body));
+
+        $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
+            ->setMethods(['post'])
+            ->getMock();
+
+        $mockGuzzle->expects($this->once())
+            ->method('post')
+            ->willThrowException(
+                new ClientException(
+                    'there was an error',
+                    $this->getMockBuilder(RequestInterface::class)->getMock(),
+                    $mockResponse
+                )
+            );
 
         $client = new Client('test_token', $mockGuzzle);
 
