@@ -2,7 +2,7 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
-## 1.2.0 - 2017-07-04
+## 1.3.0 - 2017-07-04
 
 - add error code to thrown exception
 
