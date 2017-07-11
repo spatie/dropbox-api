@@ -77,7 +77,7 @@ class Client
      *
      * If no settings are given then the default visibility is RequestedVisibility.public.
      * The resolved visibility, though, may depend on other aspects such as team and
-     * shared folder settings).
+     * shared folder settings). Only for paid users.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
      */
@@ -85,6 +85,7 @@ class Client
     {
         $parameters = [
             'path' => $this->normalizePath($path),
+            'settings' => $settings
         ];
 
         return $this->rpcEndpointRequest('sharing/create_shared_link_with_settings', $parameters);
