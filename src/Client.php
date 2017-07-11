@@ -85,7 +85,7 @@ class Client
     {
         $parameters = [
             'path' => $this->normalizePath($path),
-            'settings' => $settings
+            'settings' => $settings,
         ];
 
         return $this->rpcEndpointRequest('sharing/create_shared_link_with_settings', $parameters);
