@@ -341,5 +341,4 @@ class Client
 
         return $exception;
     }
-
 }
