@@ -446,6 +446,8 @@ class ClientTest extends TestCase
             [
                 'json' => [
                     'path' => '/Homework/math',
+                    'cursor' => 'mocked_cursor_id',
+                    'direct_only' => true,
                 ],
             ]
         );
@@ -454,7 +456,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals(
             ['url' => 'https://dl.dropboxusercontent.com/apitl/1/YXNkZmFzZGcyMzQyMzI0NjU2NDU2NDU2'],
-            $client->listSharedLinks('Homework/math')
+            $client->listSharedLinks('Homework/math', true, 'mocked_cursor_id')
         );
     }
 
