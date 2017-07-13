@@ -285,7 +285,7 @@ class Client
     }
 
     /**
-     * Get Account Info for current authenticated user
+     * Get Account Info for current authenticated user.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
      *
@@ -297,7 +297,7 @@ class Client
     }
 
     /**
-     * Revoke current access token
+     * Revoke current access token.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#auth-token-revoke
      *
