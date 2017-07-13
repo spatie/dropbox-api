@@ -284,6 +284,30 @@ class Client
         return $metadata;
     }
 
+    /**
+     * Get Account Info for current authenticated user.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
+     *
+     * @return array
+     */
+    public function getAccountInfo(): array
+    {
+        return $this->rpcEndpointRequest('users/get_current_account', []);
+    }
+
+    /**
+     * Revoke current access token.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#auth-token-revoke
+     *
+     * @return array
+     */
+    public function revokeToken(): array
+    {
+        return $this->rpcEndpointRequest('auth/token/revoke', []);
+    }
+
     protected function normalizePath(string $path): string
     {
         $path = trim($path, '/');
