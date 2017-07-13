@@ -423,7 +423,7 @@ class ClientTest extends TestCase
             'https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings',
             [
                 'json' => [
-                    'path'      => '/Homework/math',
+                    'path' => '/Homework/math',
                     'settings' => [],
                 ],
             ]
