@@ -269,6 +269,60 @@ class ClientTest extends TestCase
     }
 
     /** @test */
+    public function it_can_get_account_info()
+    {
+        $expectedResponse = [
+            'account_id' => 'dbid:AAH4f99T0taONIb-OurWxbNQ6ywGRopQngc',
+            'name' => [
+                'given_name' => 'Franz',
+                'surname' => 'Ferdinand',
+                'familiar_name' => 'Franz',
+                'display_name' => 'Franz Ferdinand (Personal)',
+                'abbreviated_name' => 'FF',
+            ],
+            'email' => 'franz@gmail.com',
+            'email_verified' => false,
+            'disabled' => false,
+            'locale' => 'en',
+            'referral_link' => 'https://db.tt/ZITNuhtI',
+            'is_paired' => false,
+            'account_type' => [
+                '.tag' => 'basic',
+            ],
+            'profile_photo_url' => 'https://dl-web.dropbox.com/account_photo/get/dbid%3AAAH4f99T0taONIb-OurWxbNQ6ywGRopQngc?vers=1453416673259&size=128x128',
+            'country' => 'US',
+        ];
+
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode($expectedResponse),
+            'https://api.dropboxapi.com/2/users/get_current_account',
+            [
+                'json' => [],
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->assertEquals($expectedResponse, $client->getAccountInfo());
+    }
+
+    /** @test */
+    public function it_can_revoke_token()
+    {
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode([]),
+            'https://api.dropboxapi.com/2/auth/token/revoke',
+            [
+                'json' => [],
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->assertEquals([], $client->revokeToken());
+    }
+
+    /** @test */
     public function content_endpoint_request_can_throw_exception()
     {
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
@@ -292,7 +346,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function rpc_endpoint_request_can_throw_exception()
+    public function rpc_endpoint_request_can_throw_exception_with_400_status_code()
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
                              ->getMock();
@@ -322,6 +376,46 @@ class ClientTest extends TestCase
     }
 
     /** @test */
+    public function rpc_endpoint_request_can_throw_exception_with_409_status_code()
+    {
+        $body = [
+            'error' => [
+                '.tag' => 'machine_readable_error_code',
+            ],
+            'error_summary' => 'Human readable error code',
+        ];
+
+        $mockResponse = $this->getMockBuilder(ResponseInterface::class)
+            ->getMock();
+        $mockResponse->expects($this->any())
+            ->method('getStatusCode')
+            ->willReturn(409);
+        $mockResponse->expects($this->any())
+            ->method('getBody')
+            ->willReturn(json_encode($body));
+
+        $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
+            ->setMethods(['post'])
+            ->getMock();
+
+        $mockGuzzle->expects($this->once())
+            ->method('post')
+            ->willThrowException(
+                new ClientException(
+                    'there was an error',
+                    $this->getMockBuilder(RequestInterface::class)->getMock(),
+                    $mockResponse
+                )
+            );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->expectException(BadRequest::class);
+
+        $client->rpcEndpointRequest('testing/endpoint', []);
+    }
+
+    /** @test */
     public function it_can_create_a_shared_link()
     {
         $mockGuzzle = $this->mock_guzzle_request(
@@ -330,6 +424,7 @@ class ClientTest extends TestCase
             [
                 'json' => [
                     'path'      => '/Homework/math',
+                    'settings' => [],
                 ],
             ]
         );
@@ -337,6 +432,30 @@ class ClientTest extends TestCase
         $client = new Client('test_token', $mockGuzzle);
 
         $this->assertEquals(['name' => 'math'], $client->createSharedLinkWithSettings('Homework/math'));
+    }
+
+    /** @test */
+    public function it_can_list_shared_links()
+    {
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode([
+                'name' => 'math',
+                'links' => ['url' => 'https://dl.dropboxusercontent.com/apitl/1/YXNkZmFzZGcyMzQyMzI0NjU2NDU2NDU2'],
+            ]),
+            'https://api.dropboxapi.com/2/sharing/list_shared_links',
+            [
+                'json' => [
+                    'path' => '/Homework/math',
+                ],
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->assertEquals(
+            ['url' => 'https://dl.dropboxusercontent.com/apitl/1/YXNkZmFzZGcyMzQyMzI0NjU2NDU2NDU2'],
+            $client->listSharedLinks('Homework/math')
+        );
     }
 
     private function mock_guzzle_request($expectedResponse, $expectedEndpoint, $expectedParams)

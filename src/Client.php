@@ -77,7 +77,7 @@ class Client
      *
      * If no settings are given then the default visibility is RequestedVisibility.public.
      * The resolved visibility, though, may depend on other aspects such as team and
-     * shared folder settings).
+     * shared folder settings). Only for paid users.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
      */
@@ -85,9 +85,29 @@ class Client
     {
         $parameters = [
             'path' => $this->normalizePath($path),
+            'settings' => $settings,
         ];
 
         return $this->rpcEndpointRequest('sharing/create_shared_link_with_settings', $parameters);
+    }
+
+    /**
+     * List shared links.
+     *
+     * For empty path returns a list of all shared links. For non-empty path
+     * returns a list of all shared links with access to the given path.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
+     */
+    public function listSharedLinks(string $path): array
+    {
+        $parameters = [
+            'path' => $this->normalizePath($path),
+        ];
+
+        $body = $this->rpcEndpointRequest('sharing/list_shared_links', $parameters);
+
+        return $body['links'];
     }
 
     /**
@@ -264,15 +284,35 @@ class Client
         return $metadata;
     }
 
+    /**
+     * Get Account Info for current authenticated user.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
+     *
+     * @return array
+     */
+    public function getAccountInfo(): array
+    {
+        return $this->rpcEndpointRequest('users/get_current_account', []);
+    }
+
+    /**
+     * Revoke current access token.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#auth-token-revoke
+     *
+     * @return array
+     */
+    public function revokeToken(): array
+    {
+        return $this->rpcEndpointRequest('auth/token/revoke', []);
+    }
+
     protected function normalizePath(string $path): string
     {
         $path = trim($path, '/');
 
-        if ($path === '') {
-            return '';
-        }
-
-        return '/'.$path;
+        return ($path === '') ? '' : '/'.$path;
     }
 
     /**
