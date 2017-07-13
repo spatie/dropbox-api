@@ -309,7 +309,6 @@ class ClientTest extends TestCase
     /** @test */
     public function it_can_revoke_token()
     {
-
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode([]),
             'https://api.dropboxapi.com/2/auth/token/revoke',
