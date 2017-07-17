@@ -293,7 +293,7 @@ class Client
      */
     public function getAccountInfo(): array
     {
-        return $this->rpcEndpointRequest('users/get_current_account', []);
+        return $this->rpcEndpointRequest('users/get_current_account');
     }
 
     /**
@@ -301,11 +301,11 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#auth-token-revoke
      *
-     * @return array
+     * @return void
      */
-    public function revokeToken(): array
+    public function revokeToken()
     {
-        return $this->rpcEndpointRequest('auth/token/revoke', []);
+        $this->rpcEndpointRequest('auth/token/revoke');
     }
 
     protected function normalizePath(string $path): string
@@ -344,12 +344,16 @@ class Client
         return $response;
     }
 
-    public function rpcEndpointRequest(string $endpoint, array $parameters): array
+    public function rpcEndpointRequest(string $endpoint, array $parameters = null)
     {
         try {
-            $response = $this->client->post("https://api.dropboxapi.com/2/{$endpoint}", [
-                'json' => $parameters,
-            ]);
+            $options = [];
+
+            if ($parameters) {
+                $options['json'] = $parameters;
+            }
+
+            $response = $this->client->post("https://api.dropboxapi.com/2/{$endpoint}", $options);
         } catch (ClientException $exception) {
             throw $this->determineException($exception);
         }

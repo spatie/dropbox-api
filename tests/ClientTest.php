@@ -296,9 +296,7 @@ class ClientTest extends TestCase
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode($expectedResponse),
             'https://api.dropboxapi.com/2/users/get_current_account',
-            [
-                'json' => [],
-            ]
+            []
         );
 
         $client = new Client('test_token', $mockGuzzle);
@@ -310,16 +308,14 @@ class ClientTest extends TestCase
     public function it_can_revoke_token()
     {
         $mockGuzzle = $this->mock_guzzle_request(
-            json_encode([]),
+            null,
             'https://api.dropboxapi.com/2/auth/token/revoke',
-            [
-                'json' => [],
-            ]
+            []
         );
 
         $client = new Client('test_token', $mockGuzzle);
 
-        $this->assertEquals([], $client->revokeToken());
+        $client->revokeToken();
     }
 
     /** @test */
@@ -462,9 +458,12 @@ class ClientTest extends TestCase
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
                              ->getMock();
-        $mockResponse->expects($this->once())
-                     ->method('getBody')
-                     ->willReturn($expectedResponse);
+
+        if ($expectedResponse) {
+            $mockResponse->expects($this->once())
+                ->method('getBody')
+                ->willReturn($expectedResponse);
+        }
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
                            ->setMethods(['post'])
