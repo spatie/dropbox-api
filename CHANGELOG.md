@@ -2,7 +2,11 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
-## 1.5.0 - 2017-07-17
+## 1.5.1 - 2017-07-17
+
+- fix broken `revokeToken` and `getAccountInfo`
+
+## 1.5.0 - 2017-07-11
 
 - add `revokeToken` and `getAccountInfo`
 
