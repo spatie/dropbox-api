@@ -97,12 +97,17 @@ class Client
      * For empty path returns a list of all shared links. For non-empty path
      * returns a list of all shared links with access to the given path.
      *
+     * If direct_only is set true, only direct links to the path will be returned, otherwise
+     * it may return link to the path itself and parent folders as described on docs.
+     *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
      */
-    public function listSharedLinks(string $path): array
+    public function listSharedLinks(string $path = null, bool $direct_only = false, string $cursor = null): array
     {
         $parameters = [
-            'path' => $this->normalizePath($path),
+            'path' => $path ? $this->normalizePath($path) : null,
+            'cursor' => $cursor,
+            'direct_only' => $direct_only,
         ];
 
         $body = $this->rpcEndpointRequest('sharing/list_shared_links', $parameters);
