@@ -300,8 +300,6 @@ class Client
      * Revoke current access token.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#auth-token-revoke
-     *
-     * @return void
      */
     public function revokeToken()
     {
@@ -360,11 +358,7 @@ class Client
 
         $response = json_decode($response->getBody(), true);
 
-        if (is_null($response)) {
-            $response = [];
-        }
-
-        return $response;
+        return $response ?? [];
     }
 
     protected function determineException(ClientException $exception): Exception
