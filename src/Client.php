@@ -344,7 +344,7 @@ class Client
         return $response;
     }
 
-    public function rpcEndpointRequest(string $endpoint, array $parameters = null)
+    public function rpcEndpointRequest(string $endpoint, array $parameters = null): array
     {
         try {
             $options = [];
@@ -358,7 +358,13 @@ class Client
             throw $this->determineException($exception);
         }
 
-        return json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody(), true);
+
+        if (is_null($response)) {
+            $response = [];
+        }
+
+        return $response;
     }
 
     protected function determineException(ClientException $exception): Exception
