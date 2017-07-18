@@ -10,6 +10,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use Spatie\Dropbox\UploadSessionCursor;
 
 class ClientTest extends TestCase
 {
@@ -266,6 +267,113 @@ class ClientTest extends TestCase
             ['.tag' => 'file', 'name' => 'answers.txt'],
             $client->upload('Homework/math/answers.txt', 'testing text upload')
         );
+    }
+
+    /** @test */
+    public function it_can_start_upload_session()
+    {
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode(['session_id' => 'mockedUploadSessionId']),
+            'https://content.dropboxapi.com/2/files/upload_session/start',
+            [
+                'headers' => [
+                    'Dropbox-API-Arg' => json_encode(
+                        [
+                            'close' => false,
+                        ]
+                    ),
+                    'Content-Type'    => 'application/octet-stream',
+                ],
+                'body'    => 'this text have 23 bytes',
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $uploadSessionCursor = $client->uploadSessionStart('this text have 23 bytes');
+
+        $this->assertInstanceOf(UploadSessionCursor::class, $uploadSessionCursor);
+        $this->assertEquals('mockedUploadSessionId', $uploadSessionCursor->session_id);
+        $this->assertEquals(23, $uploadSessionCursor->offset);
+    }
+
+    /** @test */
+    public function it_can_append_to_upload_session()
+    {
+        $mockGuzzle = $this->mock_guzzle_request(
+            null,
+            'https://content.dropboxapi.com/2/files/upload_session/append_v2',
+            [
+                'headers' => [
+                    'Dropbox-API-Arg' => json_encode(
+                        [
+                            'cursor' => [
+                                'session_id' => 'mockedUploadSessionId',
+                                'offset' => 10
+                            ],
+                            'close' => false
+                        ]
+                    ),
+                    'Content-Type'    => 'application/octet-stream',
+                ],
+                'body'    => 'this text have 23 bytes',
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $oldUploadSessionCursor = new UploadSessionCursor('mockedUploadSessionId', 10);
+
+        $uploadSessionCursor = $client->uploadSessionAppend('this text have 23 bytes', $oldUploadSessionCursor);
+
+        $this->assertInstanceOf(UploadSessionCursor::class, $uploadSessionCursor);
+        $this->assertEquals('mockedUploadSessionId', $uploadSessionCursor->session_id);
+        $this->assertEquals(33, $uploadSessionCursor->offset);
+    }
+
+    /** @test */
+    public function it_can_finish_an_upload_session()
+    {
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode([
+                'name' => 'answers.txt'
+            ]),
+            'https://content.dropboxapi.com/2/files/upload_session/finish',
+            [
+                'headers' => [
+                    'Dropbox-API-Arg' => json_encode(
+                        [
+                            'cursor' => [
+                                'session_id' => 'mockedUploadSessionId',
+                                'offset' => 10
+                            ],
+                            'commit' => [
+                                'path' => 'Homework/math/answers.txt',
+                                'mode' => 'add',
+                                'autorename' => false,
+                                'mute' => false,
+                            ]
+                        ]
+                    ),
+                    'Content-Type'    => 'application/octet-stream',
+                ],
+                'body'    => 'this text have 23 bytes',
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $oldUploadSessionCursor = new UploadSessionCursor('mockedUploadSessionId', 10);
+
+        $response = $client->uploadSessionFinish(
+            'this text have 23 bytes',
+            $oldUploadSessionCursor,
+            'Homework/math/answers.txt'
+        );
+
+        $this->assertEquals([
+            'name' => 'answers.txt'
+        ], $response);
     }
 
     /** @test */

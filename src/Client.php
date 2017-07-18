@@ -290,6 +290,84 @@ class Client
     }
 
     /**
+     * Upload sessions allow you to upload a single file in one or more requests,
+     * for example where the size of the file is greater than 150 MB.
+     * This call starts a new upload session with the given data.
+     *
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
+     *
+     * @param string|resource $contents
+     * @param int|null $chunkSize The chunk size. Must be used with remote resources.
+     * @param bool $close
+     *
+     * @return UploadSessionCursor
+     */
+    public function uploadSessionStart($contents, $chunkSize = null, bool $close = false): UploadSessionCursor
+    {
+        $arguments = compact('close');
+
+        $response = json_decode(
+            $this->contentEndpointRequest('files/upload_session/start', $arguments, $contents)->getBody(),
+            true
+        );
+
+        $chunkSize = $chunkSize ?? $this->getContentSize($contents);
+
+        return new UploadSessionCursor($response['session_id'], $chunkSize);
+    }
+
+    /**
+     * Append more data to an upload session.
+     * When the parameter close is set, this call will close the session.
+     * A single request should not upload more than 150 MB.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2
+     *
+     * @param string|resource     $contents
+     * @param UploadSessionCursor $cursor
+     * @param int|null            $chunkSize
+     * @param bool                $close
+     *
+     * @return \Spatie\Dropbox\UploadSessionCursor
+     */
+    public function uploadSessionAppend($contents, UploadSessionCursor $cursor, int $chunkSize = null, bool $close = false): UploadSessionCursor
+    {
+        $arguments = compact('cursor', 'close');
+
+        $this->contentEndpointRequest('files/upload_session/append_v2', $arguments, $contents);
+
+        $cursor->offset += $chunkSize ?? $this->getContentSize($contents);
+
+        return $cursor;
+    }
+
+    /**
+     * Finish an upload session and save the uploaded data to the given file path.
+     * A single request should not upload more than 150 MB.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
+     *
+     * @param string|resource                     $contents
+     * @param \Spatie\Dropbox\UploadSessionCursor $cursor
+     * @param string                              $path
+     * @param string|array                        $mode
+     * @param bool                                $autorename
+     * @param bool                                $mute
+     *
+     * @return array
+     */
+    public function uploadSessionFinish($contents, UploadSessionCursor $cursor, string $path, $mode = 'add', $autorename = false, $mute = false): array
+    {
+        $arguments = compact('cursor');
+        $arguments['commit'] = compact('path', 'mode', 'autorename', 'mute');
+
+        $response = $this->contentEndpointRequest('files/upload_session/finish', $arguments, $contents);
+
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
      * Get Account Info for current authenticated user.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
@@ -316,6 +394,26 @@ class Client
         $path = trim($path, '/');
 
         return ($path === '') ? '' : '/'.$path;
+    }
+
+    /**
+     * @param $content
+     *
+     * @return int
+     * @throws \Exception
+     */
+    protected function getContentSize($content): int
+    {
+        $type = gettype($content);
+
+        switch ($type) {
+            case 'string':
+                return strlen($content);
+            case 'resource':
+                return fstat($content)['size'];
+            default:
+                throw new Exception("Invalid content type: {$type}");
+        }
     }
 
     /**
