@@ -332,6 +332,50 @@ class ClientTest extends TestCase
     }
 
     /** @test */
+    public function it_can_upload_a_file_string_chunked()
+    {
+        $content = 'chunk0chunk1chunk2rest';
+        $mockClient = $this->mock_chunked_upload_client($content, 6);
+
+        $this->assertEquals(
+            ['name' => 'answers.txt'],
+            $mockClient->uploadChunked('Homework/math/answers.txt', $content, 6)
+        );
+    }
+
+    /** @test */
+    public function it_can_upload_a_file_resource_chunked()
+    {
+        $content = 'chunk0chunk1chunk2rest';
+        $resource = fopen('php://memory', 'r+');
+        fwrite($resource, $content);
+        rewind($resource);
+
+        $mockClient = $this->mock_chunked_upload_client($content, 6);
+
+        $this->assertEquals(
+            ['name' => 'answers.txt'],
+            $mockClient->uploadChunked('Homework/math/answers.txt', $resource, 6)
+        );
+    }
+
+    /** @test */
+    public function it_can_upload_a_tiny_file_chunked()
+    {
+        $content = 'smallerThenChunkSize';
+        $resource = fopen('php://memory', 'r+');
+        fwrite($resource, $content);
+        rewind($resource);
+
+        $mockClient = $this->mock_chunked_upload_client($content, 21);
+
+        $this->assertEquals(
+            ['name' => 'answers.txt'],
+            $mockClient->uploadChunked('Homework/math/answers.txt', $resource, 21)
+        );
+    }
+
+    /** @test */
     public function it_can_finish_an_upload_session()
     {
         $mockGuzzle = $this->mock_guzzle_request(
@@ -584,5 +628,46 @@ class ClientTest extends TestCase
                    ->willReturn($mockResponse);
 
         return $mockGuzzle;
+    }
+
+    private function mock_chunked_upload_client($content, $chunkSize)
+    {
+        $chunks = str_split($content, $chunkSize);
+
+        $mockClient = $this->getMockBuilder(Client::class)
+            ->setConstructorArgs(['test_token'])
+            ->setMethodsExcept(['uploadChunked'])
+            ->getMock();
+
+        $mockClient->expects($this->once())
+            ->method('uploadSessionStart')
+            ->with(array_shift($chunks))
+            ->willReturn(new UploadSessionCursor('mockedSessionId', $chunkSize));
+
+        $mockClient->expects($this->once())
+            ->method('uploadSessionFinish')
+            ->with(array_pop($chunks), $this->anything(), 'Homework/math/answers.txt', 'add')
+            ->willReturn(['name' => 'answers.txt']);
+
+        $remainingChunks = count($chunks);
+        $offset = $chunkSize;
+
+        if ($remainingChunks) {
+            $withs = [];
+            $returns = [];
+
+            foreach($chunks as $chunk) {
+                $offset += $chunkSize;
+                $withs[] = [$chunk, $this->anything()];
+                $returns[] = new UploadSessionCursor('mockedSessionId', $offset);
+            }
+
+            $mockClient->expects($this->exactly($remainingChunks))
+                ->method('uploadSessionAppend')
+                ->withConsecutive(...$withs)
+                ->willReturn(...$returns);
+        }
+
+        return $mockClient;
     }
 }

@@ -302,6 +302,7 @@ class Client
         }
 
         $data = self::readFully($stream, $chunkSize);
+        $cursor = null;
 
         while (!((strlen($data) < $chunkSize) || feof($stream))) {
             // Start upload session on first iteration, then just append on subsequent iterations
@@ -328,16 +329,14 @@ class Client
      * for example where the size of the file is greater than 150 MB.
      * This call starts a new upload session with the given data.
      *
-     *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
      *
-     * @param string|resource $contents
-     * @param int|null $chunkSize The chunk size. Must be used with remote resources.
+     * @param string $contents
      * @param bool $close
      *
      * @return UploadSessionCursor
      */
-    public function uploadSessionStart($contents, $chunkSize = null, bool $close = false): UploadSessionCursor
+    public function uploadSessionStart($contents, bool $close = false): UploadSessionCursor
     {
         $arguments = compact('close');
 
@@ -346,9 +345,7 @@ class Client
             true
         );
 
-        $chunkSize = $chunkSize ?? $this->getContentSize($contents);
-
-        return new UploadSessionCursor($response['session_id'], $chunkSize);
+        return new UploadSessionCursor($response['session_id'], strlen($contents));
     }
 
     /**
@@ -358,7 +355,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2
      *
-     * @param string|resource     $contents
+     * @param string              $contents
      * @param UploadSessionCursor $cursor
      * @param int|null            $chunkSize
      * @param bool                $close
@@ -371,7 +368,7 @@ class Client
 
         $this->contentEndpointRequest('files/upload_session/append_v2', $arguments, $contents);
 
-        $cursor->offset += $chunkSize ?? $this->getContentSize($contents);
+        $cursor->offset += strlen($contents);
 
         return $cursor;
     }
@@ -382,7 +379,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
      *
-     * @param string|resource                     $contents
+     * @param string                              $contents
      * @param \Spatie\Dropbox\UploadSessionCursor $cursor
      * @param string                              $path
      * @param string|array                        $mode
@@ -417,7 +414,7 @@ class Client
         $bytesRemaining = $numBytes;
         while (!feof($inStream) && $bytesRemaining > 0) {
             $part = fread($inStream, $bytesRemaining);
-            if ($part === false) throw new StreamReadException("Error reading from \$inStream.");
+            if ($part === false) throw new Exception("Error reading from \$inStream.");
             $full .= $part;
             $bytesRemaining -= strlen($part);
         }
@@ -451,26 +448,6 @@ class Client
         $path = trim($path, '/');
 
         return ($path === '') ? '' : '/'.$path;
-    }
-
-    /**
-     * @param $content
-     *
-     * @return int
-     * @throws \Exception
-     */
-    protected function getContentSize($content): int
-    {
-        $type = gettype($content);
-
-        switch ($type) {
-            case 'string':
-                return strlen($content);
-            case 'resource':
-                return fstat($content)['size'];
-            default:
-                throw new Exception("Invalid content type: {$type}");
-        }
     }
 
     /**
