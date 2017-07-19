@@ -18,12 +18,6 @@ class UploadSessionCursor
      */
     public $offset;
 
-    /**
-     * UploadSessionCursor constructor.
-     *
-     * @param string $session_id
-     * @param int    $offset
-     */
     public function __construct(string $session_id, int $offset = 0)
     {
         $this->session_id = $session_id;

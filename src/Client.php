@@ -305,27 +305,22 @@ class Client
      */
     public function uploadChunked(string $path, $contents, int $chunkSize, $mode = 'add'): array
     {
+        $stream = $contents;
+
         // This method relies on resources, so we need to convert strings to resource
         if (is_string($contents)) {
             $stream = fopen('php://memory', 'r+');
             fwrite($stream, $contents);
             rewind($stream);
-        } else {
-            $stream = $contents;
         }
 
-        $data = self::readFully($stream, $chunkSize);
+        $data = self::readChunk($stream, $chunkSize);
         $cursor = null;
 
         while (! ((strlen($data) < $chunkSize) || feof($stream))) {
             // Start upload session on first iteration, then just append on subsequent iterations
-            if (isset($cursor)) {
-                $cursor = $this->uploadSessionAppend($data, $cursor);
-            } else {
-                $cursor = $this->uploadSessionStart($data);
-            }
-
-            $data = self::readFully($stream, $chunkSize);
+            $cursor = isset($cursor) ? $this->uploadSessionAppend($data, $cursor) : $this->uploadSessionStart($data);
+            $data = self::readChunk($stream, $chunkSize);
         }
 
         // If there's no cursor here, our stream is small enough to a single request
@@ -419,25 +414,25 @@ class Client
      * from network streams).  This function repeatedly calls fread until the requested number of
      * bytes have been read or we've reached EOF.
      *
-     * @param resource $inStream
-     * @param int      $numBytes
+     * @param resource $stream
+     * @param int      $chunkSize
+     *
      * @throws Exception
      * @return string
      */
-    private static function readFully($inStream, int $numBytes)
+    protected static function readChunk($stream, int $chunkSize)
     {
-        $full = '';
-        $bytesRemaining = $numBytes;
-        while (! feof($inStream) && $bytesRemaining > 0) {
-            $part = fread($inStream, $bytesRemaining);
+        $chunk = '';
+        while (! feof($stream) && $chunkSize > 0) {
+            $part = fread($stream, $chunkSize);
             if ($part === false) {
-                throw new Exception('Error reading from $inStream.');
+                throw new Exception('Error reading from $stream.');
             }
-            $full .= $part;
-            $bytesRemaining -= strlen($part);
+            $chunk .= $part;
+            $chunkSize -= strlen($part);
         }
 
-        return $full;
+        return $chunk;
     }
 
     /**
