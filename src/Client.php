@@ -8,7 +8,6 @@ use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Exceptions\BadRequest;
-use Spatie\Dropbox\Exceptions\StreamReadException;
 
 class Client
 {
@@ -290,7 +289,21 @@ class Client
         return $metadata;
     }
 
-    public function uploadChunked(string $path, $contents, $chunkSize, $mode = 'add'): array
+    /**
+     * Upload file split in chunks. This allows uploading large files, since
+     * Dropbox API v2 limits the content size to 150MB.
+     *
+     * The chunk size will affect directly the memory usage, so be careful.
+     * Large chunks tends to speed up the upload, while smaller optimizes memory usage.
+     *
+     * @param string          $path
+     * @param string|resource $contents
+     * @param int             $chunkSize
+     * @param string          $mode
+     *
+     * @return array
+     */
+    public function uploadChunked(string $path, $contents, int $chunkSize, $mode = 'add'): array
     {
         // This method relies on resources, so we need to convert strings to resource
         if (is_string($contents)) {
@@ -304,7 +317,7 @@ class Client
         $data = self::readFully($stream, $chunkSize);
         $cursor = null;
 
-        while (!((strlen($data) < $chunkSize) || feof($stream))) {
+        while (! ((strlen($data) < $chunkSize) || feof($stream))) {
             // Start upload session on first iteration, then just append on subsequent iterations
             if (isset($cursor)) {
                 $cursor = $this->uploadSessionAppend($data, $cursor);
@@ -316,7 +329,7 @@ class Client
         }
 
         // If there's no cursor here, our stream is small enough to a single request
-        if (!isset($cursor)) {
+        if (! isset($cursor)) {
             $cursor = $this->uploadSessionStart($data);
             $data = '';
         }
@@ -332,7 +345,7 @@ class Client
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
      *
      * @param string $contents
-     * @param bool $close
+     * @param bool   $close
      *
      * @return UploadSessionCursor
      */
@@ -357,12 +370,11 @@ class Client
      *
      * @param string              $contents
      * @param UploadSessionCursor $cursor
-     * @param int|null            $chunkSize
      * @param bool                $close
      *
      * @return \Spatie\Dropbox\UploadSessionCursor
      */
-    public function uploadSessionAppend($contents, UploadSessionCursor $cursor, int $chunkSize = null, bool $close = false): UploadSessionCursor
+    public function uploadSessionAppend($contents, UploadSessionCursor $cursor, bool $close = false): UploadSessionCursor
     {
         $arguments = compact('cursor', 'close');
 
@@ -404,20 +416,23 @@ class Client
      * bytes have been read or we've reached EOF.
      *
      * @param resource $inStream
-     * @param int $numBytes
-     * @throws StreamReadException
+     * @param int      $numBytes
+     * @throws Exception
      * @return string
      */
     private static function readFully($inStream, int $numBytes)
     {
         $full = '';
         $bytesRemaining = $numBytes;
-        while (!feof($inStream) && $bytesRemaining > 0) {
+        while (! feof($inStream) && $bytesRemaining > 0) {
             $part = fread($inStream, $bytesRemaining);
-            if ($part === false) throw new Exception("Error reading from \$inStream.");
+            if ($part === false) {
+                throw new Exception('Error reading from $inStream.');
+            }
             $full .= $part;
             $bytesRemaining -= strlen($part);
         }
+
         return $full;
     }
 

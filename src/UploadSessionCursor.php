@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: esoares
- * Date: 18/07/17
- * Time: 16:32
- */
 
 namespace Spatie\Dropbox;
 
@@ -20,7 +14,7 @@ class UploadSessionCursor
     /**
      * The amount of data that has been uploaded so far. We use this to make sure upload data isn't lost or duplicated in the event of a network error.
      *
-     * @var integer
+     * @var int
      */
     public $offset;
 
@@ -28,7 +22,7 @@ class UploadSessionCursor
      * UploadSessionCursor constructor.
      *
      * @param string $session_id
-     * @param int $offset
+     * @param int    $offset
      */
     public function __construct(string $session_id, int $offset = 0)
     {

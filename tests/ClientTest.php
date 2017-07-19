@@ -8,9 +8,9 @@ use Psr\Http\Message\StreamInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Spatie\Dropbox\UploadSessionCursor;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Exceptions\BadRequest;
-use Spatie\Dropbox\UploadSessionCursor;
 
 class ClientTest extends TestCase
 {
@@ -309,9 +309,9 @@ class ClientTest extends TestCase
                         [
                             'cursor' => [
                                 'session_id' => 'mockedUploadSessionId',
-                                'offset' => 10
+                                'offset' => 10,
                             ],
-                            'close' => false
+                            'close' => false,
                         ]
                     ),
                     'Content-Type'    => 'application/octet-stream',
@@ -380,7 +380,7 @@ class ClientTest extends TestCase
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode([
-                'name' => 'answers.txt'
+                'name' => 'answers.txt',
             ]),
             'https://content.dropboxapi.com/2/files/upload_session/finish',
             [
@@ -389,14 +389,14 @@ class ClientTest extends TestCase
                         [
                             'cursor' => [
                                 'session_id' => 'mockedUploadSessionId',
-                                'offset' => 10
+                                'offset' => 10,
                             ],
                             'commit' => [
                                 'path' => 'Homework/math/answers.txt',
                                 'mode' => 'add',
                                 'autorename' => false,
                                 'mute' => false,
-                            ]
+                            ],
                         ]
                     ),
                     'Content-Type'    => 'application/octet-stream',
@@ -416,7 +416,7 @@ class ClientTest extends TestCase
         );
 
         $this->assertEquals([
-            'name' => 'answers.txt'
+            'name' => 'answers.txt',
         ], $response);
     }
 
@@ -656,7 +656,7 @@ class ClientTest extends TestCase
             $withs = [];
             $returns = [];
 
-            foreach($chunks as $chunk) {
+            foreach ($chunks as $chunk) {
                 $offset += $chunkSize;
                 $withs[] = [$chunk, $this->anything()];
                 $returns[] = new UploadSessionCursor('mockedSessionId', $offset);
