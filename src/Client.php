@@ -8,6 +8,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use Spatie\Dropbox\Exceptions\StreamReadException;
 
 class Client
 {
@@ -289,6 +290,39 @@ class Client
         return $metadata;
     }
 
+    public function uploadChunked(string $path, $contents, $chunkSize, $mode = 'add'): array
+    {
+        // This method relies on resources, so we need to convert strings to resource
+        if (is_string($contents)) {
+            $stream = fopen('php://memory', 'r+');
+            fwrite($stream, $contents);
+            rewind($stream);
+        } else {
+            $stream = $contents;
+        }
+
+        $data = self::readFully($stream, $chunkSize);
+
+        while (!((strlen($data) < $chunkSize) || feof($stream))) {
+            // Start upload session on first iteration, then just append on subsequent iterations
+            if (isset($cursor)) {
+                $cursor = $this->uploadSessionAppend($data, $cursor);
+            } else {
+                $cursor = $this->uploadSessionStart($data);
+            }
+
+            $data = self::readFully($stream, $chunkSize);
+        }
+
+        // If there's no cursor here, our stream is small enough to a single request
+        if (!isset($cursor)) {
+            $cursor = $this->uploadSessionStart($data);
+            $data = '';
+        }
+
+        return $this->uploadSessionFinish($data, $cursor, $path, $mode);
+    }
+
     /**
      * Upload sessions allow you to upload a single file in one or more requests,
      * for example where the size of the file is greater than 150 MB.
@@ -365,6 +399,29 @@ class Client
         $response = $this->contentEndpointRequest('files/upload_session/finish', $arguments, $contents);
 
         return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Sometimes fread() returns less than the request number of bytes (for example, when reading
+     * from network streams).  This function repeatedly calls fread until the requested number of
+     * bytes have been read or we've reached EOF.
+     *
+     * @param resource $inStream
+     * @param int $numBytes
+     * @throws StreamReadException
+     * @return string
+     */
+    private static function readFully($inStream, int $numBytes)
+    {
+        $full = '';
+        $bytesRemaining = $numBytes;
+        while (!feof($inStream) && $bytesRemaining > 0) {
+            $part = fread($inStream, $bytesRemaining);
+            if ($part === false) throw new StreamReadException("Error reading from \$inStream.");
+            $full .= $part;
+            $bytesRemaining -= strlen($part);
+        }
+        return $full;
     }
 
     /**
