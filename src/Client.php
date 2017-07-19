@@ -405,7 +405,11 @@ class Client
         $arguments = compact('cursor');
         $arguments['commit'] = compact('path', 'mode', 'autorename', 'mute');
 
-        $response = $this->contentEndpointRequest('files/upload_session/finish', $arguments, $contents);
+        $response = $this->contentEndpointRequest(
+            'files/upload_session/finish',
+            $arguments,
+            ($contents == '') ? null : $contents
+        );
 
         return json_decode($response->getBody(), true);
     }
