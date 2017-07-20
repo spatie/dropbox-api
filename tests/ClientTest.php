@@ -339,7 +339,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals(
             ['name' => 'answers.txt'],
-            $mockClient->uploadChunked('Homework/math/answers.txt', $content, 6)
+            $mockClient->uploadChunked('Homework/math/answers.txt', $content, 'add', 6)
         );
     }
 
@@ -355,7 +355,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals(
             ['name' => 'answers.txt'],
-            $mockClient->uploadChunked('Homework/math/answers.txt', $resource, 6)
+            $mockClient->uploadChunked('Homework/math/answers.txt', $resource, 'add', 6)
         );
     }
 
@@ -371,7 +371,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals(
             ['name' => 'answers.txt'],
-            $mockClient->uploadChunked('Homework/math/answers.txt', $resource, 21)
+            $mockClient->uploadChunked('Homework/math/answers.txt', $resource, 'add', 21)
         );
     }
 

@@ -20,6 +20,9 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
+    const AUTO_CHUNKED_UPLOAD_THRESHOLD = 157286400;
+    const DEFAULT_CHUNK_SIZE = 4194304;
+
     /** @var string */
     protected $accessToken;
 
@@ -275,6 +278,14 @@ class Client
      */
     public function upload(string $path, $contents, $mode = 'add'): array
     {
+        $size = is_string($contents) ? strlen($contents) : fstat($contents)['size'];
+
+        // If we couldn't determine file size or it's larger then 150 MB,
+        // we upload it using the upload_session feature.
+        if ($size === null || $size > self::AUTO_CHUNKED_UPLOAD_THRESHOLD) {
+            return $this->uploadChunked($path, $contents, $mode);
+        }
+
         $arguments = [
             'path' => $this->normalizePath($path),
             'mode' => $mode,
@@ -298,13 +309,14 @@ class Client
      *
      * @param string          $path
      * @param string|resource $contents
-     * @param int             $chunkSize
      * @param string          $mode
+     * @param int             $chunkSize
      *
      * @return array
      */
-    public function uploadChunked(string $path, $contents, int $chunkSize, $mode = 'add'): array
+    public function uploadChunked(string $path, $contents, $mode = 'add', $chunkSize = null): array
     {
+        $chunkSize = $chunkSize ?? static::DEFAULT_CHUNK_SIZE;
         $stream = $contents;
 
         // This method relies on resources, so we need to convert strings to resource
