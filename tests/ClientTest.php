@@ -332,6 +332,21 @@ class ClientTest extends TestCase
     }
 
     /** @test */
+    public function it_automatically_chunk_uploads()
+    {
+        $content = 'chunk0chunk1chunk2rest';
+        $mockClient = $this->mock_chunked_upload_client($content, 6);
+        $mockClient->expects($this->any())
+            ->method('getMaxChunkSize')
+            ->willReturn('6');
+
+        $this->assertEquals(
+            ['name' => 'answers.txt'],
+            $mockClient->upload('Homework/math/answers.txt', $content, 'add')
+        );
+    }
+
+    /** @test */
     public function it_can_upload_a_file_string_chunked()
     {
         $content = 'chunk0chunk1chunk2rest';
@@ -636,7 +651,7 @@ class ClientTest extends TestCase
 
         $mockClient = $this->getMockBuilder(Client::class)
             ->setConstructorArgs(['test_token'])
-            ->setMethodsExcept(['uploadChunked'])
+            ->setMethodsExcept(['uploadChunked', 'upload'])
             ->getMock();
 
         $mockClient->expects($this->once())

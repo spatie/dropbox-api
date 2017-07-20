@@ -20,8 +20,7 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
-    const AUTO_CHUNKED_UPLOAD_THRESHOLD = 157286400;
-    const DEFAULT_CHUNK_SIZE = 4194304;
+    const MAX_CHUNK_SIZE = 157286400;
 
     /** @var string */
     protected $accessToken;
@@ -264,6 +263,31 @@ class Client
     }
 
     /**
+     * Get max chunk size that can be sent to dropbox api.
+     *
+     * @return int
+     */
+    public function getMaxChunkSize(): int
+    {
+        return static::MAX_CHUNK_SIZE;
+    }
+
+    /**
+     * The file should be uploaded in chunks if it size exceeds the 150 MB threshold
+     * or if the resource size could not be determined (eg. a popen() stream).
+     *
+     * @param string|resource $contents
+     *
+     * @return bool
+     */
+    protected function shouldUploadChunked($contents): bool
+    {
+        $size = is_string($contents) ? strlen($contents) : fstat($contents)['size'];
+
+        return $size === null || $size > $this->getMaxChunkSize();
+    }
+
+    /**
      * Create a new file with the contents provided in the request.
      *
      * Do not use this to upload a file larger than 150 MB. Instead, create an upload session with upload_session/start.
@@ -278,11 +302,7 @@ class Client
      */
     public function upload(string $path, $contents, $mode = 'add'): array
     {
-        $size = is_string($contents) ? strlen($contents) : fstat($contents)['size'];
-
-        // If we couldn't determine file size or it's larger then 150 MB,
-        // we upload it using the upload_session feature.
-        if ($size === null || $size > self::AUTO_CHUNKED_UPLOAD_THRESHOLD) {
+        if ($this->shouldUploadChunked($contents)) {
             return $this->uploadChunked($path, $contents, $mode);
         }
 
@@ -316,7 +336,7 @@ class Client
      */
     public function uploadChunked(string $path, $contents, $mode = 'add', $chunkSize = null): array
     {
-        $chunkSize = $chunkSize ?? static::DEFAULT_CHUNK_SIZE;
+        $chunkSize = $chunkSize ?? $this->getMaxChunkSize();
         $stream = $contents;
 
         // This method relies on resources, so we need to convert strings to resource
