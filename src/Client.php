@@ -284,7 +284,11 @@ class Client
     {
         $size = is_string($contents) ? strlen($contents) : fstat($contents)['size'];
 
-        return $size === null || $size > $this->getMaxChunkSize();
+        // @todo: remove this when/if guzzle/psr7#79 or guzzle/psr7#155 be fixed
+        // it's a workaround to avoid pipes being sent with zero size by guzzle/http
+        $isPipe = is_resource($contents) ? (fstat($contents)['mode'] & 010000) != 0 : false;
+
+        return $isPipe || $size === null || $size > $this->getMaxChunkSize();
     }
 
     /**
