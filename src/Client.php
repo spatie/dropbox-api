@@ -296,7 +296,7 @@ class Client
     }
 
     /**
-     * Check if the contents is a pipe stream (not seekable, no size defined)
+     * Check if the contents is a pipe stream (not seekable, no size defined).
      *
      * @param string|resource $contents
      *
