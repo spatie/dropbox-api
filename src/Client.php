@@ -20,7 +20,7 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
-    const MAX_CHUNK_SIZE = 157286400;
+    const MAX_CHUNK_SIZE = 150 * 1024 * 1024;
 
     /** @var string */
     protected $accessToken;
