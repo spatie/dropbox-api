@@ -284,11 +284,27 @@ class Client
     {
         $size = is_string($contents) ? strlen($contents) : fstat($contents)['size'];
 
-        // @todo: remove this when/if guzzle/psr7#79 or guzzle/psr7#155 be fixed
-        // it's a workaround to avoid pipes being sent with zero size by guzzle/http
-        $isPipe = is_resource($contents) ? (fstat($contents)['mode'] & 010000) != 0 : false;
+        if ($this->isPipe($contents)) {
+            return true;
+        }
 
-        return $isPipe || $size === null || $size > $this->getMaxChunkSize();
+        if ($size === null) {
+            return true;
+        }
+
+        return $size > $this->getMaxChunkSize();
+    }
+
+    /**
+     * Check if the contents is a pipe stream (not seekable, no size defined)
+     *
+     * @param string|resource $contents
+     *
+     * @return bool
+     */
+    protected function isPipe($contents): bool
+    {
+        return is_resource($contents) ? (fstat($contents)['mode'] & 010000) != 0 : false;
     }
 
     /**
