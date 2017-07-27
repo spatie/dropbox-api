@@ -248,7 +248,7 @@ class Client
      *
      * If the source path is a folder all its contents will be moved.
      *
-     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move_v2
      */
     public function move(string $fromPath, string $toPath): array
     {
@@ -257,7 +257,7 @@ class Client
             'to_path' => $this->normalizePath($toPath),
         ];
 
-        return $this->rpcEndpointRequest('files/move', $parameters);
+        return $this->rpcEndpointRequest('files/move_v2', $parameters);
     }
 
     /**
