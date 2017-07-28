@@ -226,7 +226,7 @@ class ClientTest extends TestCase
 
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode($expectedResponse),
-            'https://api.dropboxapi.com/2/files/move',
+            'https://api.dropboxapi.com/2/files/move_v2',
             [
                 'json' => [
                     'from_path' => '/from/path/file.txt',
