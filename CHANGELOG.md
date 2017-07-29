@@ -2,6 +2,11 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+
+## 1.6.1 - 2017-07-28
+
+- fix for finishing upload session
+
 ## 1.6.0 - 2017-07-28
 
 - add various new methods to enable chuncked uploads
