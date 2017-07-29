@@ -20,6 +20,8 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
+    const MAX_CHUNK_SIZE = 150 * 1024 * 1024;
+
     /** @var string */
     protected $accessToken;
 
@@ -261,6 +263,51 @@ class Client
     }
 
     /**
+     * Get max chunk size that can be sent to dropbox api.
+     *
+     * @return int
+     */
+    public function getMaxChunkSize(): int
+    {
+        return static::MAX_CHUNK_SIZE;
+    }
+
+    /**
+     * The file should be uploaded in chunks if it size exceeds the 150 MB threshold
+     * or if the resource size could not be determined (eg. a popen() stream).
+     *
+     * @param string|resource $contents
+     *
+     * @return bool
+     */
+    protected function shouldUploadChunked($contents): bool
+    {
+        $size = is_string($contents) ? strlen($contents) : fstat($contents)['size'];
+
+        if ($this->isPipe($contents)) {
+            return true;
+        }
+
+        if ($size === null) {
+            return true;
+        }
+
+        return $size > $this->getMaxChunkSize();
+    }
+
+    /**
+     * Check if the contents is a pipe stream (not seekable, no size defined).
+     *
+     * @param string|resource $contents
+     *
+     * @return bool
+     */
+    protected function isPipe($contents): bool
+    {
+        return is_resource($contents) ? (fstat($contents)['mode'] & 010000) != 0 : false;
+    }
+
+    /**
      * Create a new file with the contents provided in the request.
      *
      * Do not use this to upload a file larger than 150 MB. Instead, create an upload session with upload_session/start.
@@ -275,6 +322,10 @@ class Client
      */
     public function upload(string $path, $contents, $mode = 'add'): array
     {
+        if ($this->shouldUploadChunked($contents)) {
+            return $this->uploadChunked($path, $contents, $mode);
+        }
+
         $arguments = [
             'path' => $this->normalizePath($path),
             'mode' => $mode,
@@ -287,6 +338,153 @@ class Client
         $metadata['.tag'] = 'file';
 
         return $metadata;
+    }
+
+    /**
+     * Upload file split in chunks. This allows uploading large files, since
+     * Dropbox API v2 limits the content size to 150MB.
+     *
+     * The chunk size will affect directly the memory usage, so be careful.
+     * Large chunks tends to speed up the upload, while smaller optimizes memory usage.
+     *
+     * @param string          $path
+     * @param string|resource $contents
+     * @param string          $mode
+     * @param int             $chunkSize
+     *
+     * @return array
+     */
+    public function uploadChunked(string $path, $contents, $mode = 'add', $chunkSize = null): array
+    {
+        $chunkSize = $chunkSize ?? $this->getMaxChunkSize();
+        $stream = $contents;
+
+        // This method relies on resources, so we need to convert strings to resource
+        if (is_string($contents)) {
+            $stream = fopen('php://memory', 'r+');
+            fwrite($stream, $contents);
+            rewind($stream);
+        }
+
+        $data = self::readChunk($stream, $chunkSize);
+        $cursor = null;
+
+        while (! ((strlen($data) < $chunkSize) || feof($stream))) {
+            // Start upload session on first iteration, then just append on subsequent iterations
+            $cursor = isset($cursor) ? $this->uploadSessionAppend($data, $cursor) : $this->uploadSessionStart($data);
+            $data = self::readChunk($stream, $chunkSize);
+        }
+
+        // If there's no cursor here, our stream is small enough to a single request
+        if (! isset($cursor)) {
+            $cursor = $this->uploadSessionStart($data);
+            $data = '';
+        }
+
+        return $this->uploadSessionFinish($data, $cursor, $path, $mode);
+    }
+
+    /**
+     * Upload sessions allow you to upload a single file in one or more requests,
+     * for example where the size of the file is greater than 150 MB.
+     * This call starts a new upload session with the given data.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
+     *
+     * @param string $contents
+     * @param bool   $close
+     *
+     * @return UploadSessionCursor
+     */
+    public function uploadSessionStart($contents, bool $close = false): UploadSessionCursor
+    {
+        $arguments = compact('close');
+
+        $response = json_decode(
+            $this->contentEndpointRequest('files/upload_session/start', $arguments, $contents)->getBody(),
+            true
+        );
+
+        return new UploadSessionCursor($response['session_id'], strlen($contents));
+    }
+
+    /**
+     * Append more data to an upload session.
+     * When the parameter close is set, this call will close the session.
+     * A single request should not upload more than 150 MB.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2
+     *
+     * @param string              $contents
+     * @param UploadSessionCursor $cursor
+     * @param bool                $close
+     *
+     * @return \Spatie\Dropbox\UploadSessionCursor
+     */
+    public function uploadSessionAppend($contents, UploadSessionCursor $cursor, bool $close = false): UploadSessionCursor
+    {
+        $arguments = compact('cursor', 'close');
+
+        $this->contentEndpointRequest('files/upload_session/append_v2', $arguments, $contents);
+
+        $cursor->offset += strlen($contents);
+
+        return $cursor;
+    }
+
+    /**
+     * Finish an upload session and save the uploaded data to the given file path.
+     * A single request should not upload more than 150 MB.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
+     *
+     * @param string                              $contents
+     * @param \Spatie\Dropbox\UploadSessionCursor $cursor
+     * @param string                              $path
+     * @param string|array                        $mode
+     * @param bool                                $autorename
+     * @param bool                                $mute
+     *
+     * @return array
+     */
+    public function uploadSessionFinish($contents, UploadSessionCursor $cursor, string $path, $mode = 'add', $autorename = false, $mute = false): array
+    {
+        $arguments = compact('cursor');
+        $arguments['commit'] = compact('path', 'mode', 'autorename', 'mute');
+
+        $response = $this->contentEndpointRequest(
+            'files/upload_session/finish',
+            $arguments,
+            ($contents == '') ? null : $contents
+        );
+
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Sometimes fread() returns less than the request number of bytes (for example, when reading
+     * from network streams).  This function repeatedly calls fread until the requested number of
+     * bytes have been read or we've reached EOF.
+     *
+     * @param resource $stream
+     * @param int      $chunkSize
+     *
+     * @throws Exception
+     * @return string
+     */
+    protected static function readChunk($stream, int $chunkSize)
+    {
+        $chunk = '';
+        while (! feof($stream) && $chunkSize > 0) {
+            $part = fread($stream, $chunkSize);
+            if ($part === false) {
+                throw new Exception('Error reading from $stream.');
+            }
+            $chunk .= $part;
+            $chunkSize -= strlen($part);
+        }
+
+        return $chunk;
     }
 
     /**
