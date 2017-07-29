@@ -263,16 +263,6 @@ class Client
     }
 
     /**
-     * Get max chunk size that can be sent to dropbox api.
-     *
-     * @return int
-     */
-    public function getMaxChunkSize(): int
-    {
-        return static::MAX_CHUNK_SIZE;
-    }
-
-    /**
      * The file should be uploaded in chunks if it size exceeds the 150 MB threshold
      * or if the resource size could not be determined (eg. a popen() stream).
      *
@@ -292,7 +282,7 @@ class Client
             return true;
         }
 
-        return $size > $this->getMaxChunkSize();
+        return $size > static::MAX_CHUNK_SIZE;
     }
 
     /**
@@ -356,7 +346,7 @@ class Client
      */
     public function uploadChunked(string $path, $contents, $mode = 'add', $chunkSize = null): array
     {
-        $chunkSize = $chunkSize ?? $this->getMaxChunkSize();
+        $chunkSize = $chunkSize ?? static::MAX_CHUNK_SIZE;
         $stream = $contents;
 
         // This method relies on resources, so we need to convert strings to resource

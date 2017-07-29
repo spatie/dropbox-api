@@ -36,7 +36,7 @@ class ClientTest extends TestCase
             [
                 'json' => [
                     'from_path' => '/from/path/file.txt',
-                    'to_path'   => '/to/path/file.txt',
+                    'to_path' => '/to/path/file.txt',
                 ],
             ]
         );
@@ -86,10 +86,10 @@ class ClientTest extends TestCase
     public function it_can_download_a_file()
     {
         $expectedResponse = $this->getMockBuilder(StreamInterface::class)
-                                 ->getMock();
+            ->getMock();
         $expectedResponse->expects($this->once())
-                         ->method('isReadable')
-                         ->willReturn(true);
+            ->method('isReadable')
+            ->willReturn(true);
 
         $mockGuzzle = $this->mock_guzzle_request(
             $expectedResponse,
@@ -98,7 +98,7 @@ class ClientTest extends TestCase
                 'headers' => [
                     'Dropbox-API-Arg' => json_encode(['path' => '/Homework/math/answers.txt']),
                 ],
-                'body'    => '',
+                'body' => '',
             ]
         );
 
@@ -153,7 +153,7 @@ class ClientTest extends TestCase
     public function it_can_get_a_thumbnail()
     {
         $expectedResponse = $this->getMockBuilder(StreamInterface::class)
-                                 ->getMock();
+            ->getMock();
 
         $mockGuzzle = $this->mock_guzzle_request(
             $expectedResponse,
@@ -162,13 +162,13 @@ class ClientTest extends TestCase
                 'headers' => [
                     'Dropbox-API-Arg' => json_encode(
                         [
-                            'path'   => '/Homework/math/answers.jpg',
+                            'path' => '/Homework/math/answers.jpg',
                             'format' => 'jpeg',
-                            'size'   => 'w64h64',
+                            'size' => 'w64h64',
                         ]
                     ),
                 ],
-                'body'    => '',
+                'body' => '',
             ]
         );
 
@@ -185,7 +185,7 @@ class ClientTest extends TestCase
             'https://api.dropboxapi.com/2/files/list_folder',
             [
                 'json' => [
-                    'path'      => '/Homework/math',
+                    'path' => '/Homework/math',
                     'recursive' => true,
                 ],
             ]
@@ -231,7 +231,7 @@ class ClientTest extends TestCase
             [
                 'json' => [
                     'from_path' => '/from/path/file.txt',
-                    'to_path'   => '',
+                    'to_path' => '',
                 ],
             ]
         );
@@ -249,15 +249,13 @@ class ClientTest extends TestCase
             'https://content.dropboxapi.com/2/files/upload',
             [
                 'headers' => [
-                    'Dropbox-API-Arg' => json_encode(
-                        [
-                            'path' => '/Homework/math/answers.txt',
-                            'mode' => 'add',
-                        ]
-                    ),
-                    'Content-Type'    => 'application/octet-stream',
+                    'Dropbox-API-Arg' => json_encode([
+                        'path' => '/Homework/math/answers.txt',
+                        'mode' => 'add',
+                    ]),
+                    'Content-Type' => 'application/octet-stream',
                 ],
-                'body'    => 'testing text upload',
+                'body' => 'testing text upload',
             ]
         );
 
@@ -282,9 +280,9 @@ class ClientTest extends TestCase
                             'close' => false,
                         ]
                     ),
-                    'Content-Type'    => 'application/octet-stream',
+                    'Content-Type' => 'application/octet-stream',
                 ],
-                'body'    => 'this text have 23 bytes',
+                'body' => 'this text have 23 bytes',
             ]
         );
 
@@ -314,9 +312,9 @@ class ClientTest extends TestCase
                             'close' => false,
                         ]
                     ),
-                    'Content-Type'    => 'application/octet-stream',
+                    'Content-Type' => 'application/octet-stream',
                 ],
-                'body'    => 'this text have 23 bytes',
+                'body' => 'this text has 32 bytes',
             ]
         );
 
@@ -324,26 +322,11 @@ class ClientTest extends TestCase
 
         $oldUploadSessionCursor = new UploadSessionCursor('mockedUploadSessionId', 10);
 
-        $uploadSessionCursor = $client->uploadSessionAppend('this text have 23 bytes', $oldUploadSessionCursor);
+        $uploadSessionCursor = $client->uploadSessionAppend('this text has 32 bytes', $oldUploadSessionCursor);
 
         $this->assertInstanceOf(UploadSessionCursor::class, $uploadSessionCursor);
         $this->assertEquals('mockedUploadSessionId', $uploadSessionCursor->session_id);
-        $this->assertEquals(33, $uploadSessionCursor->offset);
-    }
-
-    /** @test */
-    public function it_automatically_chunk_uploads()
-    {
-        $content = 'chunk0chunk1chunk2rest';
-        $mockClient = $this->mock_chunked_upload_client($content, 6);
-        $mockClient->expects($this->any())
-            ->method('getMaxChunkSize')
-            ->willReturn('6');
-
-        $this->assertEquals(
-            ['name' => 'answers.txt'],
-            $mockClient->upload('Homework/math/answers.txt', $content, 'add')
-        );
+        $this->assertEquals(32, $uploadSessionCursor->offset);
     }
 
     /** @test */
@@ -414,9 +397,9 @@ class ClientTest extends TestCase
                             ],
                         ]
                     ),
-                    'Content-Type'    => 'application/octet-stream',
+                    'Content-Type' => 'application/octet-stream',
                 ],
-                'body'    => 'this text have 23 bytes',
+                'body' => 'this text have 23 bytes',
             ]
         );
 
@@ -489,17 +472,17 @@ class ClientTest extends TestCase
     public function content_endpoint_request_can_throw_exception()
     {
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-                           ->setMethods(['post'])
-                           ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
         $mockGuzzle->expects($this->once())
-                   ->method('post')
-                   ->willThrowException(
-                       new ClientException(
-                           'there was an error',
-                           $this->getMockBuilder(RequestInterface::class)->getMock(),
-                           $this->getMockBuilder(ResponseInterface::class)->getMock()
-                       )
-                   );
+            ->method('post')
+            ->willThrowException(
+                new ClientException(
+                    'there was an error',
+                    $this->getMockBuilder(RequestInterface::class)->getMock(),
+                    $this->getMockBuilder(ResponseInterface::class)->getMock()
+                )
+            );
 
         $client = new Client('test_token', $mockGuzzle);
 
@@ -512,24 +495,24 @@ class ClientTest extends TestCase
     public function rpc_endpoint_request_can_throw_exception_with_400_status_code()
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
-                             ->getMock();
+            ->getMock();
         $mockResponse->expects($this->any())
-                     ->method('getStatusCode')
-                     ->willReturn(400);
+            ->method('getStatusCode')
+            ->willReturn(400);
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-                           ->setMethods(['post'])
-                           ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         $mockGuzzle->expects($this->once())
-                   ->method('post')
-                   ->willThrowException(
-                       new ClientException(
-                           'there was an error',
-                           $this->getMockBuilder(RequestInterface::class)->getMock(),
-                           $mockResponse
-                       )
-                   );
+            ->method('post')
+            ->willThrowException(
+                new ClientException(
+                    'there was an error',
+                    $this->getMockBuilder(RequestInterface::class)->getMock(),
+                    $mockResponse
+                )
+            );
 
         $client = new Client('test_token', $mockGuzzle);
 
@@ -626,7 +609,7 @@ class ClientTest extends TestCase
     private function mock_guzzle_request($expectedResponse, $expectedEndpoint, $expectedParams)
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
-                             ->getMock();
+            ->getMock();
 
         if ($expectedResponse) {
             $mockResponse->expects($this->once())
@@ -635,12 +618,12 @@ class ClientTest extends TestCase
         }
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-                           ->setMethods(['post'])
-                           ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
         $mockGuzzle->expects($this->once())
-                   ->method('post')
-                   ->with($expectedEndpoint, $expectedParams)
-                   ->willReturn($mockResponse);
+            ->method('post')
+            ->with($expectedEndpoint, $expectedParams)
+            ->willReturn($mockResponse);
 
         return $mockGuzzle;
     }

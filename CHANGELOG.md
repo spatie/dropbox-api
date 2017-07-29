@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.6.0 - 2017-07-28
+
+- add various new methods to enable chuncked uploads
+
 ## 1.5.3 - 2017-07-28
 
 - use recommended `move_v2` method to move files
