@@ -383,23 +383,21 @@ class ClientTest extends TestCase
             'https://content.dropboxapi.com/2/files/upload_session/finish',
             [
                 'headers' => [
-                    'Dropbox-API-Arg' => json_encode(
-                        [
-                            'cursor' => [
-                                'session_id' => 'mockedUploadSessionId',
-                                'offset' => 10,
-                            ],
-                            'commit' => [
-                                'path' => 'Homework/math/answers.txt',
-                                'mode' => 'add',
-                                'autorename' => false,
-                                'mute' => false,
-                            ],
-                        ]
-                    ),
+                    'Dropbox-API-Arg' => json_encode([
+                        'cursor' => [
+                            'session_id' => 'mockedUploadSessionId',
+                            'offset' => 10,
+                        ],
+                        'commit' => [
+                            'path' => 'Homework/math/answers.txt',
+                            'mode' => 'add',
+                            'autorename' => false,
+                            'mute' => false,
+                        ],
+                    ]),
                     'Content-Type' => 'application/octet-stream',
                 ],
-                'body' => 'this text have 23 bytes',
+                'body' => 'this text has 32 bytes',
             ]
         );
 
@@ -408,7 +406,7 @@ class ClientTest extends TestCase
         $oldUploadSessionCursor = new UploadSessionCursor('mockedUploadSessionId', 10);
 
         $response = $client->uploadSessionFinish(
-            'this text have 23 bytes',
+            'this text has 32 bytes',
             $oldUploadSessionCursor,
             'Homework/math/answers.txt'
         );
