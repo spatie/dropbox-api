@@ -412,6 +412,7 @@ class ClientTest extends TestCase
         );
 
         $this->assertEquals([
+            '.tag' => 'file',
             'name' => 'answers.txt',
         ], $response);
     }
