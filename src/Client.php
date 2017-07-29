@@ -448,7 +448,11 @@ class Client
             ($contents == '') ? null : $contents
         );
 
-        return json_decode($response->getBody(), true);
+        $metadata = json_decode($response->getBody(), true);
+
+        $metadata['.tag'] = 'file';
+
+        return $metadata;
     }
 
     /**
