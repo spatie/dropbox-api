@@ -32,7 +32,7 @@ class ClientTest extends TestCase
 
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode($expectedResponse),
-            'https://api.dropboxapi.com/2/files/copy',
+            'https://api.dropboxapi.com/2/files/copy_v2',
             [
                 'json' => [
                     'from_path' => '/from/path/file.txt',
@@ -643,7 +643,7 @@ class ClientTest extends TestCase
 
         $mockClient->expects($this->once())
             ->method('uploadSessionFinish')
-            ->with(array_pop($chunks), $this->anything(), 'Homework/math/answers.txt', 'add')
+            ->with('', $this->anything(), 'Homework/math/answers.txt', 'add')
             ->willReturn(['name' => 'answers.txt']);
 
         $remainingChunks = count($chunks);

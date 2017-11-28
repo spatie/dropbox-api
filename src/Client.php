@@ -5,10 +5,10 @@ namespace Spatie\Dropbox;
 use Exception;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\StreamWrapper;
+use Psr\Http\Message\StreamInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
-use Psr\Http\Message\StreamInterface;
 use Spatie\Dropbox\Exceptions\BadRequest;
 
 class Client
@@ -32,7 +32,6 @@ class Client
 
     /** @var int */
     protected $maxChunkSize;
-
 
     /**
      * @param string            $accessToken
@@ -359,19 +358,20 @@ class Client
      */
     public function uploadChunked(string $path, $contents, $mode = 'add', $chunkSize = null): array
     {
-        if ($chunkSize === null || $chunkSize > $this->maxChunkSize)
+        if ($chunkSize === null || $chunkSize > $this->maxChunkSize) {
             $chunkSize = $this->maxChunkSize;
-
-        $cursor = null;
-        $stream = Psr7\stream_for($contents);
-        while (!$stream->eof()) {
-            $chunk_stream = new Psr7\LimitStream($stream, $chunkSize, $stream->tell());
-            // Start upload session on first iteration, then just append on subsequent iterations
-            if(isset($cursor))
-                $cursor = $this->uploadSessionAppend($chunk_stream, $cursor);
-            else
-                $cursor = $this->uploadSessionStart($chunk_stream);
         }
+
+        $stream = Psr7\stream_for($contents);
+
+        $chunk_stream = new Psr7\LimitStream($stream, $chunkSize, $stream->tell());
+        $cursor = $this->uploadSessionStart($chunk_stream);
+
+        while (! $stream->eof()) {
+            $chunk_stream = new Psr7\LimitStream($stream, $chunkSize, $stream->tell());
+            $cursor = $this->uploadSessionAppend($chunk_stream, $cursor);
+        }
+
         return $this->uploadSessionFinish('', $cursor, $path, $mode);
     }
 
