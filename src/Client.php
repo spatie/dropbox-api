@@ -10,6 +10,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use GuzzleHttp\Exception\RequestException;
 
 class Client
 {
@@ -24,6 +25,9 @@ class Client
 
     const MAX_CHUNK_SIZE = 150 * 1024 * 1024;
 
+    const UPLOAD_SESSION_START = 0;
+    const UPLOAD_SESSION_APPEND = 1;
+
     /** @var string */
     protected $accessToken;
 
@@ -33,12 +37,16 @@ class Client
     /** @var int */
     protected $maxChunkSize;
 
+    /** @var int */
+    protected $maxUploadChunkRetries;
+
     /**
      * @param string            $accessToken
      * @param GuzzleClient|null $client
-     * @param int               $maxChunkSize This is also the amount of memory that will be used for storing data
+     * @param int               $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
+     * @param int               $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
      */
-    public function __construct(string $accessToken, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE /*4 * 1024 * 1024*/)
+    public function __construct(string $accessToken, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0)
     {
         $this->accessToken = $accessToken;
 
@@ -48,7 +56,8 @@ class Client
                 ],
             ]);
 
-        $this->maxChunkSize = ($maxChunkSize < self::MAX_CHUNK_SIZE ? $maxChunkSize : self::MAX_CHUNK_SIZE);
+        $this->maxChunkSize = ($maxChunkSize < self::MAX_CHUNK_SIZE ? ($maxChunkSize > 1 ? $maxChunkSize : 1) : self::MAX_CHUNK_SIZE);
+        $this->maxUploadChunkRetries = $maxUploadChunkRetries;
     }
 
     /**
@@ -318,7 +327,7 @@ class Client
      *
      * @param string $path
      * @param string|resource $contents
-     * @param string|array $mode
+     * @param string $mode
      *
      * @return array
      */
@@ -363,16 +372,45 @@ class Client
         }
 
         $stream = Psr7\stream_for($contents);
-
-        $chunk_stream = new Psr7\LimitStream($stream, $chunkSize, $stream->tell());
-        $cursor = $this->uploadSessionStart($chunk_stream);
-
+        $cursor = $this->uploadChunk(self::UPLOAD_SESSION_START, $stream, $chunkSize, null);
         while (! $stream->eof()) {
-            $chunk_stream = new Psr7\LimitStream($stream, $chunkSize, $stream->tell());
-            $cursor = $this->uploadSessionAppend($chunk_stream, $cursor);
+            $cursor = $this->uploadChunk(self::UPLOAD_SESSION_APPEND, $stream, $chunkSize, $cursor);
         }
 
         return $this->uploadSessionFinish('', $cursor, $path, $mode);
+    }
+
+    /**
+     * @param int         $type
+     * @param Psr7\Stream $stream
+     * @param int         $chunkSize
+     * @param \Spatie\Dropbox\UploadSessionCursor|null $cursor
+     * @return \Spatie\Dropbox\UploadSessionCursor
+     * @throws Exception
+     */
+    protected function uploadChunk($type, &$stream, $chunkSize, $cursor = null): UploadSessionCursor
+    {
+        $tries = $stream->isSeekable() ? $this->maxUploadChunkRetries : 0;
+        $pos = $stream->tell();
+
+        lRetry:
+        try {
+            $chunk_stream = new Psr7\LimitStream($stream, $chunkSize, $stream->tell());
+            if ($type === self::UPLOAD_SESSION_START) {
+                return $this->uploadSessionStart($chunk_stream);
+            } elseif ($type === self::UPLOAD_SESSION_APPEND && $cursor !== null) {
+                return $this->uploadSessionAppend($chunk_stream, $cursor);
+            } else {
+                throw new \Exception('Invalid type');
+            }
+        } catch (RequestException $e) {
+            if ($tries-- > 0) {
+                // rewind
+                $stream->seek($pos, SEEK_SET);
+                goto lRetry;
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -497,7 +535,7 @@ class Client
      */
     public function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
     {
-        $headers['Dropbox-API-Arg'] = json_encode($arguments);
+        $headers = ['Dropbox-API-Arg' => json_encode($arguments)];
 
         if ($body !== '') {
             $headers['Content-Type'] = 'application/octet-stream';
