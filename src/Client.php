@@ -23,7 +23,7 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
-    const MAX_CHUNK_SIZE =  150;
+    const MAX_CHUNK_SIZE = 150;
 
     const UPLOAD_SESSION_START = 0;
     const UPLOAD_SESSION_APPEND = 1;
