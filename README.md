@@ -11,6 +11,15 @@ This is a minimal PHP implementation of the [Dropbox API v2](https://www.dropbox
 Here are a few examples on how you can use the package:
 
 ```php
+/**
+ * @param string            $accessToken
+ * @param GuzzleClient|null $client
+ * @param int               $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
+ * @param int               $maxUploadChunkRetries How many times to retry an upload session start/append after RequestException.
+ */
+// Spatie\Dropbox\Client(string $accessToken, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0)
+
+//create a simple client
 $client = new Spatie\Dropbox\Client($authorizationToken);
 
 //create a folder
@@ -21,6 +30,11 @@ $client->listFolder($path);
 
 //get a temporary link
 $client->getTemporaryLink($path);
+
+//...//
+
+// If you want to compensate for network issues during chunked upload then you can create a client like this:
+$client = new Spatie\Dropbox\Client($authorizationToken, null, 4*1024*1024, 1); // any upload larger than specified $maxChunkSize (4MB) will be split into chunks of $maxChunkSize and each chunk append may be retried $maxUploadChunkRetries (1).
 ```
 ## Installation
 
