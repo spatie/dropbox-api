@@ -2,9 +2,15 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+<<<<<<< HEAD
 ## 1.6.2 - 2017-12-04
 
 - improved chunked uploading
+=======
+## 1.6.4 - 2017-12-05
+
+- fix max chunk size
+>>>>>>> d2f496a7f72c81ba5a63bd94a3ccef395402351e
 
 ## 1.6.1 - 2017-07-28
 
