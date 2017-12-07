@@ -2,6 +2,9 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.6.2 - 2017-12-04
+
+- improved chunked uploading
 
 ## 1.6.1 - 2017-07-28
 
