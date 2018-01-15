@@ -2,6 +2,11 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.6.5 - 2018-01-15
+
+- adjust `normalizePath` to allow id/rev/ns to be queried
+
+
 ## 1.6.4 - 2017-12-05
 
 - fix max chunk size
