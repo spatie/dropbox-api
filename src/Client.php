@@ -528,11 +528,10 @@ class Client
 
     protected function normalizePath(string $path): string
     {
-        if (preg_match("/^id:.*|^rev:.*|^(ns:[0-9]+(\/.*)?)/",  $path) === 1)
-        {
+        if (preg_match("/^id:.*|^rev:.*|^(ns:[0-9]+(\/.*)?)/", $path) === 1) {
             return $path;
         }
-        
+
         $path = trim($path, '/');
 
         return ($path === '') ? '' : '/'.$path;
