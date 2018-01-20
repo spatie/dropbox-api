@@ -605,6 +605,25 @@ class ClientTest extends TestCase
         );
     }
 
+    /** @test */
+    public function it_can_normalize_paths()
+    {
+        $normalizeFunction = self::getMethod('normalizePath');
+
+        $client = new Client('test_token');
+
+        //Default functionality of client to prepend slash for file paths requested
+        $this->assertEquals($normalizeFunction->invokeArgs($client, ['/test/file/path']), '/test/file/path');
+        $this->assertEquals($normalizeFunction->invokeArgs($client, ['testurl']), '/testurl');
+        $this->assertEquals($normalizeFunction->invokeArgs($client, ['']), '');
+        $this->assertEquals($normalizeFunction->invokeArgs($client, ['file:1234567890']), '/file:1234567890');
+
+        //If supplied with a direct id/ns/rev normalization should not prepend slash
+        $this->assertEquals($normalizeFunction->invokeArgs($client, ['id:1234567890']), 'id:1234567890');
+        $this->assertEquals($normalizeFunction->invokeArgs($client, ['ns:1234567890']), 'ns:1234567890');
+        $this->assertEquals($normalizeFunction->invokeArgs($client, ['rev:1234567890']), 'rev:1234567890');
+    }
+
     private function mock_guzzle_request($expectedResponse, $expectedEndpoint, $expectedParams)
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
@@ -666,5 +685,14 @@ class ClientTest extends TestCase
         }
 
         return $mockClient;
+    }
+
+    protected static function getMethod($name)
+    {
+        $class = new \ReflectionClass('Spatie\Dropbox\Client');
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+
+        return $method;
     }
 }
