@@ -23,7 +23,7 @@ class Client
     const THUMBNAIL_SIZE_L = 'w640h480';
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
-    const MAX_CHUNK_SIZE = 150 * 1024 * 1024;
+    const MAX_CHUNK_SIZE = 1024 * 1024 * 150;
 
     const UPLOAD_SESSION_START = 0;
     const UPLOAD_SESSION_APPEND = 1;
@@ -383,6 +383,7 @@ class Client
             $stream = Psr7\stream_for($contents);
         }
 
+
         $cursor = $this->uploadChunk(self::UPLOAD_SESSION_START, $stream, $chunkSize, null);
 
         while (! $stream->eof()) {
@@ -402,26 +403,33 @@ class Client
      */
     protected function uploadChunk($type, &$stream, $chunkSize, $cursor = null): UploadSessionCursor
     {
-        $tries = $stream->isSeekable() ? $this->maxUploadChunkRetries : 0;
+        $maximumTries = $stream->isSeekable() ? $this->maxUploadChunkRetries : 0;
         $pos = $stream->tell();
 
-        lRetry:
+        $tries = 0;
+
+        tryUpload:
         try {
-            $chunk_stream = new Psr7\LimitStream($stream, $chunkSize, $stream->tell());
+            $tries++;
+
+            $chunkStream = new Psr7\LimitStream($stream, $chunkSize, $stream->tell());
+
             if ($type === self::UPLOAD_SESSION_START) {
-                return $this->uploadSessionStart($chunk_stream);
-            } elseif ($type === self::UPLOAD_SESSION_APPEND && $cursor !== null) {
-                return $this->uploadSessionAppend($chunk_stream, $cursor);
-            } else {
-                throw new \Exception('Invalid type');
+                return $this->uploadSessionStart($chunkStream);
             }
-        } catch (RequestException $e) {
-            if ($tries-- > 0) {
+
+            if ($type === self::UPLOAD_SESSION_APPEND && $cursor !== null) {
+                return $this->uploadSessionAppend($chunkStream, $cursor);
+            }
+
+            throw new Exception('Invalid type');
+        } catch (RequestException $exception) {
+            if ($tries < $maximumTries) {
                 // rewind
                 $stream->seek($pos, SEEK_SET);
-                goto lRetry;
+                goto tryUpload;
             }
-            throw $e;
+            throw $exception;
         }
     }
 
@@ -531,6 +539,10 @@ class Client
 
     protected function normalizePath(string $path): string
     {
+        if (preg_match("/^id:.*|^rev:.*|^(ns:[0-9]+(\/.*)?)/", $path) === 1) {
+            return $path;
+        }
+
         $path = trim($path, '/');
 
         return ($path === '') ? '' : '/'.$path;
