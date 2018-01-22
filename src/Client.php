@@ -322,12 +322,13 @@ class Client
      * Create a new file with the contents provided in the request.
      *
      * Do not use this to upload a file larger than 150 MB. Instead, create an upload session with upload_session/start.
+     * For $mode you can use an object, for example: $mode=["update"=>$SomeRev, ".tag"=> "update"]
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload
      *
      * @param string $path
      * @param string|resource $contents
-     * @param string $mode
+     * @param string|object $mode  
      *
      * @return array
      */
