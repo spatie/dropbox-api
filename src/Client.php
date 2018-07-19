@@ -371,7 +371,19 @@ class Client
             $chunkSize = $this->maxChunkSize;
         }
 
-        $stream = Psr7\stream_for($contents);
+        if ($this->isPipe($contents)) {
+            /** @var resource $contents */
+            $stream = new \GuzzleHttp\Psr7\PumpStream(function ($length) use ($contents) {
+                $data = fread($contents, $length);
+                if (strlen($data) === 0) {
+                    return false;
+                }
+
+                return $data;
+            });
+        } else {
+            $stream = Psr7\stream_for($contents);
+        }
 
         $cursor = $this->uploadChunk(self::UPLOAD_SESSION_START, $stream, $chunkSize, null);
 
