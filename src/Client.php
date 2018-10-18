@@ -231,7 +231,7 @@ class Client
 
         $response = $this->contentEndpointRequest('files/get_thumbnail', $arguments);
 
-        return (string)$response->getBody();
+        return (string) $response->getBody();
     }
 
     /**
@@ -376,7 +376,7 @@ class Client
 
         $cursor = $this->uploadChunk(self::UPLOAD_SESSION_START, $stream, $chunkSize, null);
 
-        while (!$stream->eof()) {
+        while (! $stream->eof()) {
             $cursor = $this->uploadChunk(self::UPLOAD_SESSION_APPEND, $stream, $chunkSize, $cursor);
         }
 
@@ -535,7 +535,7 @@ class Client
 
         $path = trim($path, '/');
 
-        return ($path === '') ? '' : '/' . $path;
+        return ($path === '') ? '' : '/'.$path;
     }
 
     /**
@@ -603,7 +603,7 @@ class Client
     protected function getStream($contents)
     {
         if ($this->isPipe($contents)) {
-            /** @var resource $contents */
+            /* @var resource $contents */
             return new PumpStream(function ($length) use ($contents) {
                 $data = fread($contents, $length);
                 if (strlen($data) === 0) {
@@ -612,7 +612,6 @@ class Client
 
                 return $data;
             });
-
         }
 
         return Psr7\stream_for($contents);
