@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.7.0 - 2019-02-06
+
+- add getter and setter for the access token
+
 ## 1.6.6 - 2018-07-19
 
 - fix for piped streams
