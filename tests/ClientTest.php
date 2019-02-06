@@ -34,6 +34,9 @@ class ClientTest extends TestCase
             json_encode($expectedResponse),
             'https://api.dropboxapi.com/2/files/copy_v2',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'from_path' => '/from/path/file.txt',
                     'to_path' => '/to/path/file.txt',
@@ -53,6 +56,9 @@ class ClientTest extends TestCase
             json_encode(['name' => 'math']),
             'https://api.dropboxapi.com/2/files/create_folder',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'path' => '/Homework/math',
                 ],
@@ -71,6 +77,9 @@ class ClientTest extends TestCase
             json_encode(['name' => 'math']),
             'https://api.dropboxapi.com/2/files/delete',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'path' => '/Homework/math',
                 ],
@@ -96,6 +105,7 @@ class ClientTest extends TestCase
             'https://content.dropboxapi.com/2/files/download',
             [
                 'headers' => [
+                    'Authorization' => 'Bearer test_token',
                     'Dropbox-API-Arg' => json_encode(['path' => '/Homework/math/answers.txt']),
                 ],
                 'body' => '',
@@ -114,6 +124,9 @@ class ClientTest extends TestCase
             json_encode(['name' => 'math']),
             'https://api.dropboxapi.com/2/files/get_metadata',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'path' => '/Homework/math',
                 ],
@@ -135,6 +148,9 @@ class ClientTest extends TestCase
             ]),
             'https://api.dropboxapi.com/2/files/get_temporary_link',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'path' => '/Homework/math',
                 ],
@@ -160,6 +176,7 @@ class ClientTest extends TestCase
             'https://content.dropboxapi.com/2/files/get_thumbnail',
             [
                 'headers' => [
+                    'Authorization' => 'Bearer test_token',
                     'Dropbox-API-Arg' => json_encode(
                         [
                             'path' => '/Homework/math/answers.jpg',
@@ -184,6 +201,9 @@ class ClientTest extends TestCase
             json_encode(['name' => 'math']),
             'https://api.dropboxapi.com/2/files/list_folder',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'path' => '/Homework/math',
                     'recursive' => true,
@@ -203,6 +223,9 @@ class ClientTest extends TestCase
             json_encode(['name' => 'math']),
             'https://api.dropboxapi.com/2/files/list_folder/continue',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'cursor' => 'ZtkX9_EHj3x7PMkVuFIhwKYXEpwpLwyxp9vMKomUhllil9q7eWiAu',
                 ],
@@ -229,6 +252,9 @@ class ClientTest extends TestCase
             json_encode($expectedResponse),
             'https://api.dropboxapi.com/2/files/move_v2',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'from_path' => '/from/path/file.txt',
                     'to_path' => '',
@@ -249,6 +275,7 @@ class ClientTest extends TestCase
             'https://content.dropboxapi.com/2/files/upload',
             [
                 'headers' => [
+                    'Authorization' => 'Bearer test_token',
                     'Dropbox-API-Arg' => json_encode([
                         'path' => '/Homework/math/answers.txt',
                         'mode' => 'add',
@@ -275,6 +302,7 @@ class ClientTest extends TestCase
             'https://content.dropboxapi.com/2/files/upload_session/start',
             [
                 'headers' => [
+                    'Authorization' => 'Bearer test_token',
                     'Dropbox-API-Arg' => json_encode(
                         [
                             'close' => false,
@@ -303,6 +331,7 @@ class ClientTest extends TestCase
             'https://content.dropboxapi.com/2/files/upload_session/append_v2',
             [
                 'headers' => [
+                    'Authorization' => 'Bearer test_token',
                     'Dropbox-API-Arg' => json_encode(
                         [
                             'cursor' => [
@@ -383,6 +412,7 @@ class ClientTest extends TestCase
             'https://content.dropboxapi.com/2/files/upload_session/finish',
             [
                 'headers' => [
+                    'Authorization' => 'Bearer test_token',
                     'Dropbox-API-Arg' => json_encode([
                         'cursor' => [
                             'session_id' => 'mockedUploadSessionId',
@@ -445,7 +475,11 @@ class ClientTest extends TestCase
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode($expectedResponse),
             'https://api.dropboxapi.com/2/users/get_current_account',
-            []
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
+            ]
         );
 
         $client = new Client('test_token', $mockGuzzle);
@@ -459,7 +493,11 @@ class ClientTest extends TestCase
         $mockGuzzle = $this->mock_guzzle_request(
             null,
             'https://api.dropboxapi.com/2/auth/token/revoke',
-            []
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
+            ]
         );
 
         $client = new Client('test_token', $mockGuzzle);
@@ -567,6 +605,9 @@ class ClientTest extends TestCase
             json_encode(['name' => 'math']),
             'https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'path' => '/Homework/math',
                     'settings' => [],
@@ -589,6 +630,9 @@ class ClientTest extends TestCase
             ]),
             'https://api.dropboxapi.com/2/sharing/list_shared_links',
             [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
                 'json' => [
                     'path' => '/Homework/math',
                     'cursor' => 'mocked_cursor_id',
@@ -622,6 +666,24 @@ class ClientTest extends TestCase
         $this->assertEquals($normalizeFunction->invokeArgs($client, ['id:1234567890']), 'id:1234567890');
         $this->assertEquals($normalizeFunction->invokeArgs($client, ['ns:1234567890']), 'ns:1234567890');
         $this->assertEquals($normalizeFunction->invokeArgs($client, ['rev:1234567890']), 'rev:1234567890');
+    }
+
+    /** @test */
+    public function it_can_get_the_access_token()
+    {
+        $client = new Client('test_token');
+
+        $this->assertEquals('test_token', $client->getAccessToken());
+    }
+
+    /** @test */
+    public function it_can_set_the_access_token()
+    {
+        $client = new Client('test_token');
+
+        $client->setAccessToken('another_test_token');
+
+        $this->assertEquals('another_test_token', $client->getAccessToken());
     }
 
     private function mock_guzzle_request($expectedResponse, $expectedEndpoint, $expectedParams)
