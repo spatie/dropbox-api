@@ -104,7 +104,7 @@ class Client
     public function createSharedLinkWithSettings(string $path, array $settings = [])
     {
         $parameters = [
-            'path' => $this->normalizePath($path)
+            'path' => $this->normalizePath($path),
         ];
 
         if (count($settings)) {
