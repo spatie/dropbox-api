@@ -104,9 +104,12 @@ class Client
     public function createSharedLinkWithSettings(string $path, array $settings = [])
     {
         $parameters = [
-            'path' => $this->normalizePath($path),
-            'settings' => $settings,
+            'path' => $this->normalizePath($path)
         ];
+
+        if (count($settings)) {
+            $parameters = array_merge(compact('settings'), $parameters);
+        }
 
         return $this->rpcEndpointRequest('sharing/create_shared_link_with_settings', $parameters);
     }

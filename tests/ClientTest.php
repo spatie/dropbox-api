@@ -610,7 +610,6 @@ class ClientTest extends TestCase
                 ],
                 'json' => [
                     'path' => '/Homework/math',
-                    'settings' => [],
                 ],
             ]
         );

@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.7.1 - 2019-02-13
+
+- fix for `createSharedLinkWithSettings` with empty settings
+
 ## 1.7.0 - 2019-02-06
 
 - add getter and setter for the access token
