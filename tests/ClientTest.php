@@ -610,7 +610,6 @@ class ClientTest extends TestCase
                 ],
                 'json' => [
                     'path' => '/Homework/math',
-                    'settings' => [],
                 ],
             ]
         );
@@ -618,6 +617,34 @@ class ClientTest extends TestCase
         $client = new Client('test_token', $mockGuzzle);
 
         $this->assertEquals(['name' => 'math'], $client->createSharedLinkWithSettings('Homework/math'));
+    }
+
+    /** @test */
+    public function it_can_create_a_shared_link_with_custom_settings()
+    {
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode(['name' => 'math']),
+            'https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings',
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
+                'json' => [
+                    'path' => '/Homework/math',
+                    'settings' => [
+                        'requested_visibility' => 'public',
+                    ],
+                ],
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $settings = [
+            'requested_visibility' => 'public',
+        ];
+
+        $this->assertEquals(['name' => 'math'], $client->createSharedLinkWithSettings('Homework/math', $settings));
     }
 
     /** @test */
