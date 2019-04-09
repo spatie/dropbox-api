@@ -539,8 +539,8 @@ class Client
 
     protected function getEndpointUrl(string $subdomain, string $endpoint): string
     {
-        if (count($list = explode('::', $endpoint)) === 2) {
-            list($subdomain, $endpoint) = $list;
+        if (count($parts = explode('::', $endpoint)) === 2) {
+            [$subdomain, $endpoint] = $parts;
         }
 
         return "https://{$subdomain}.dropboxapi.com/2/{$endpoint}";
