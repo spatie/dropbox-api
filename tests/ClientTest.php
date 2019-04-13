@@ -713,6 +713,17 @@ class ClientTest extends TestCase
         $this->assertEquals('another_test_token', $client->getAccessToken());
     }
 
+    /** @test */
+    public function it_can_change_the_endpoint_subdomain()
+    {
+        $client = new Client('test_token');
+
+        $endpointFunction = static::getMethod('getEndpointUrl');
+
+        $this->assertEquals($endpointFunction->invokeArgs($client, ['api', 'files/delete']), 'https://api.dropboxapi.com/2/files/delete');
+        $this->assertEquals($endpointFunction->invokeArgs($client, ['api', 'content::files/get_thumbnail_batch']), 'https://content.dropboxapi.com/2/files/get_thumbnail_batch');
+    }
+
     private function mock_guzzle_request($expectedResponse, $expectedEndpoint, $expectedParams)
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)

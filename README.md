@@ -56,6 +56,14 @@ Here's an example:
 $client->rpcEndpointRequest('search', ['path' => '', 'query' => 'bat cave']);
 ```
 
+If you need to change the subdomain of the endpoint URL used in the API request, you can prefix the endpoint path with `subdomain::`.
+
+Here's an example:
+
+```php
+$client->rpcEndpointRequest('content::files/get_thumbnail_batch', $parameters);
+```
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
