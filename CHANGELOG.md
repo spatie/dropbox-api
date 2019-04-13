@@ -2,6 +2,11 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.8.0 - 2019-04-13
+
+- add `getEndpointUrl`
+- drop support for PHP 7.0
+
 ## 1.7.1 - 2019-02-13
 
 - fix for `createSharedLinkWithSettings` with empty settings
