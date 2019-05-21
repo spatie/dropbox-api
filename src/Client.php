@@ -4,6 +4,8 @@ namespace Spatie\Dropbox;
 
 use Exception;
 use GuzzleHttp\Psr7;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\PumpStream;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Psr\Http\Message\StreamInterface;
@@ -11,6 +13,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 
 class Client
@@ -25,6 +28,9 @@ class Client
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
     const MAX_CHUNK_SIZE = 1024 * 1024 * 150;
+
+    const RETRY_BACKOFF = 1000;
+    const RETRY_CODES = [429];
 
     const UPLOAD_SESSION_START = 0;
     const UPLOAD_SESSION_APPEND = 1;
@@ -51,10 +57,28 @@ class Client
     {
         $this->accessToken = $accessToken;
 
-        $this->client = $client ?? new GuzzleClient();
+        $this->client = $client ?? new GuzzleClient(['handler' => self::createHandler()]);
 
         $this->maxChunkSize = ($maxChunkSize < self::MAX_CHUNK_SIZE ? ($maxChunkSize > 1 ? $maxChunkSize : 1) : self::MAX_CHUNK_SIZE);
         $this->maxUploadChunkRetries = $maxUploadChunkRetries;
+    }
+
+    /**
+     * Create a new guzzle handler stack.
+     *
+     * @return \GuzzleHttp\HandlerStack
+     */
+    protected static function createHandler()
+    {
+        $stack = HandlerStack::create();
+
+        $stack->push(Middleware::retry(function ($retries, $request, $response = null, $exception = null) {
+            return $retries < 3 && ($exception instanceof ConnectException || ($response && ($response->getStatusCode() >= 500 || in_array($response->getStatusCode(), self::RETRY_CODES, true))));
+        }, function ($retries) {
+            return (int) pow(2, $retries) * self::RETRY_BACKOFF;
+        }));
+
+        return $stack;
     }
 
     /**
