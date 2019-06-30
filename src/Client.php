@@ -75,7 +75,7 @@ class Client
         $stack->push(Middleware::retry(function ($retries, $request, $response = null, $exception = null) {
             return $retries < 3 && ($exception instanceof ConnectException || ($response && ($response->getStatusCode() >= 500 || in_array($response->getStatusCode(), self::RETRY_CODES, true))));
         }, function ($retries) {
-            return (int) pow(2, $retries) * self::RETRY_BACKOFF;
+            return (int) pow(2, $retries) * self::RETRY_BACKOFF);
         }));
 
         return $stack;
