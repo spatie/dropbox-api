@@ -26,6 +26,7 @@
     ],
     "require": {
         "php": "^7.1",
+        "graham-campbell/guzzle-factory": "^3.0",
         "guzzlehttp/guzzle": "^6.2"
     },
     "require-dev": {

@@ -12,6 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Exceptions\BadRequest;
 use GuzzleHttp\Exception\RequestException;
+use GrahamCampbell\GuzzleFactory\GuzzleFactory;
 
 class Client
 {
@@ -51,7 +52,7 @@ class Client
     {
         $this->accessToken = $accessToken;
 
-        $this->client = $client ?? new GuzzleClient();
+        $this->client = $client ?? new GuzzleClient(['handler' => GuzzleFactory::handler()]);
 
         $this->maxChunkSize = ($maxChunkSize < self::MAX_CHUNK_SIZE ? ($maxChunkSize > 1 ? $maxChunkSize : 1) : self::MAX_CHUNK_SIZE);
         $this->maxUploadChunkRetries = $maxUploadChunkRetries;
