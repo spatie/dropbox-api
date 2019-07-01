@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.10.0 - 2019-07-01
+
+- move retry stuff to package
+
 ## 1.9.0 - 2019-05-21
 
 - make guzzle retry 5xx and 429 responses
