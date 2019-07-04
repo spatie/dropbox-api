@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.11.0 - 2019-07-04
+
+- add `$response` to `BadRequest`
+
 ## 1.10.0 - 2019-07-01
 
 - move retry stuff to package
