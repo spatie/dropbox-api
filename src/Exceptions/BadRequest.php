@@ -8,6 +8,11 @@ use Psr\Http\Message\ResponseInterface;
 class BadRequest extends Exception
 {
     /**
+     * @var \Psr\Http\Message\ResponseInterface
+     */
+    public $response;
+    
+    /**
      * The dropbox error code supplied in the response.
      *
      * @var string|null
@@ -16,6 +21,8 @@ class BadRequest extends Exception
 
     public function __construct(ResponseInterface $response)
     {
+        $this->response = $response;
+        
         $body = json_decode($response->getBody(), true);
 
         if (isset($body['error']['.tag'])) {
