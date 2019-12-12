@@ -3,16 +3,16 @@
 namespace Spatie\Dropbox;
 
 use Exception;
+use GrahamCampbell\GuzzleFactory\GuzzleFactory;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\PumpStream;
 use GuzzleHttp\Psr7\StreamWrapper;
-use Psr\Http\Message\StreamInterface;
-use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Exception\ClientException;
+use Psr\Http\Message\StreamInterface;
 use Spatie\Dropbox\Exceptions\BadRequest;
-use GuzzleHttp\Exception\RequestException;
-use GrahamCampbell\GuzzleFactory\GuzzleFactory;
 
 class Client
 {
