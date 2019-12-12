@@ -2,15 +2,15 @@
 
 namespace Spatie\Dropbox\Test;
 
-use Spatie\Dropbox\Client;
-use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\StreamInterface;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Spatie\Dropbox\UploadSessionCursor;
-use GuzzleHttp\Exception\ClientException;
+use Psr\Http\Message\StreamInterface;
+use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use Spatie\Dropbox\UploadSessionCursor;
 
 class ClientTest extends TestCase
 {
