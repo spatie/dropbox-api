@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.11.1 - 2019-12-12
+
+- make compatible with PHP 7.4
+
 ## 1.11.0 - 2019-07-04
 
 - add `$response` to `BadRequest`
