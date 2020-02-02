@@ -116,6 +116,21 @@ class Client
     }
 
     /**
+     * Search a file or folder in the user's Dropbox.
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-search
+     */
+    public function search(string $query, bool $includeHighlights = false)
+    {
+        $parameters = [
+            'query' => $query,
+            'include_highlights' => $includeHighlights,
+        ];
+
+        return $this->rpcEndpointRequest('files/search_v2', $parameters);
+    }
+
+    /**
      * List shared links.
      *
      * For empty path returns a list of all shared links. For non-empty path

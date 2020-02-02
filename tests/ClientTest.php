@@ -50,6 +50,61 @@ class ClientTest extends TestCase
     }
 
     /** @test */
+    public function it_can_search_for_files()
+    {
+        $expectedResponse =
+            [
+                'matches' =>
+                [
+                    0 =>
+                    [
+                        'metadata' =>
+                        [
+                            '.tag' => 'metadata',
+                            'metadata' =>
+                            [
+                                '.tag' => 'file',
+                                'name' => 'test1.paper',
+                                'path_lower' => '/n/test1.paper',
+                                'path_display' => '/n/test1.paper',
+                                'id' => 'id:0XUXdYxPoJUAAAAAAAAACg',
+                                'client_modified' => '2020-02-02T09:38:39Z',
+                                'server_modified' => '2020-02-02T09:38:39Z',
+                                'rev' => '59d94925cef7e2f00226e',
+                                'size' => 0,
+                                'is_downloadable' => false,
+                                'export_info' =>
+                                [
+                                    'export_as' => 'html',
+                                ],
+                            'content_hash' => '54323eb0cd738a795362ea5a630863740fa38428f5a0ba7c45b29a0611234eec',
+                            ],
+                        ],
+                    ],
+                ],
+                'has_more' => false,
+            ];
+
+        $mockGuzzle = $this->mock_guzzle_request(
+            json_encode($expectedResponse),
+            'https://api.dropboxapi.com/2/files/search_v2',
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                ],
+                'json' => [
+                    "query" => "test1.paper",
+                    "include_highlights" => false
+                ],
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->assertEquals($expectedResponse, $client->search('test1.paper'));
+    }
+
+    /** @test */
     public function it_can_create_a_folder()
     {
         $mockGuzzle = $this->mock_guzzle_request(
