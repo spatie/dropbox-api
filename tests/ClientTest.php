@@ -54,15 +54,11 @@ class ClientTest extends TestCase
     {
         $expectedResponse =
             [
-                'matches' =>
-                [
-                    0 =>
-                    [
-                        'metadata' =>
-                        [
+                'matches' => [
+                    0 => [
+                        'metadata' => [
                             '.tag' => 'metadata',
-                            'metadata' =>
-                            [
+                            'metadata' => [
                                 '.tag' => 'file',
                                 'name' => 'test1.paper',
                                 'path_lower' => '/n/test1.paper',
@@ -73,11 +69,10 @@ class ClientTest extends TestCase
                                 'rev' => '59d94925cef7e2f00226e',
                                 'size' => 0,
                                 'is_downloadable' => false,
-                                'export_info' =>
-                                [
+                                'export_info' => [
                                     'export_as' => 'html',
                                 ],
-                            'content_hash' => '54323eb0cd738a795362ea5a630863740fa38428f5a0ba7c45b29a0611234eec',
+                                'content_hash' => '54323eb0cd738a795362ea5a630863740fa38428f5a0ba7c45b29a0611234eec',
                             ],
                         ],
                     ],
@@ -93,8 +88,8 @@ class ClientTest extends TestCase
                     'Authorization' => 'Bearer test_token',
                 ],
                 'json' => [
-                    "query" => "test1.paper",
-                    "include_highlights" => false
+                    'query' => 'test1.paper',
+                    'include_highlights' => false,
                 ],
             ]
         );
