@@ -669,14 +669,15 @@ class Client
     protected function getHeaders(array $headers = []): array
     {
         return array_merge([
-            'Authorization' => "Bearer {$this->accessToken}"
+            'Authorization' => "Bearer {$this->accessToken}",
         ], $headers, $this->customHeaders);
     }
 
     /**
-     * Set the HTTP headers
+     * Set the HTTP headers.
      */
-    public function setHeaders(array $headers = []){
+    public function setHeaders(array $headers = [])
+    {
         $this->customHeaders = $headers;
     }
 }
