@@ -33,6 +33,9 @@ class Client
     /** @var string */
     protected $accessToken;
 
+    /** @var array */
+    protected $customHeaders;
+
     /** @var \GuzzleHttp\Client */
     protected $client;
 
@@ -51,6 +54,7 @@ class Client
     public function __construct(string $accessToken, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0)
     {
         $this->accessToken = $accessToken;
+        $this->customHeaders = [];
 
         $this->client = $client ?? new GuzzleClient(['handler' => GuzzleFactory::handler()]);
 
@@ -665,7 +669,14 @@ class Client
     protected function getHeaders(array $headers = []): array
     {
         return array_merge([
-            'Authorization' => "Bearer {$this->accessToken}",
-        ], $headers);
+            'Authorization' => "Bearer {$this->accessToken}"
+        ], $headers, $this->customHeaders);
+    }
+
+    /**
+     * Set the HTTP headers
+     */
+    public function setHeaders(array $headers = []){
+        $this->customHeaders = $headers;
     }
 }
