@@ -42,6 +42,14 @@ $client = new Spatie\Dropbox\Client($authorizationToken);
 
 Look in [the source code of `Spatie\Dropbox\Client`](https://github.com/spatie/dropbox-api/blob/master/src/Client.php) to discover the methods you can use.
 
+If you need to use custom headers for various usages such as to use Team APIs or to pass Document root folder, you can set your custom headers with function `setHeaders()`.
+
+Here's an example:
+
+```php
+$client->setHeaders(['Dropbox-Api-Select-User' => 'dbmid:masjdlajsdnasnlajsfdlasjdan', 'Dropbox-Api-Path-Root' => '{".tag": "namespace_id", "namespace_id": "1234567890"}']);
+```
+
 If you do not find your favorite method, you can directly use the `contentEndpointRequest` and `rpcEndpointRequest` functions.
 
 ```php
