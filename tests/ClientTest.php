@@ -168,6 +168,32 @@ class ClientTest extends TestCase
     }
 
     /** @test */
+    public function it_can_download_a_folder_as_zip()
+    {
+        $expectedResponse = $this->getMockBuilder(StreamInterface::class)
+            ->getMock();
+        $expectedResponse->expects($this->once())
+            ->method('isReadable')
+            ->willReturn(true);
+
+        $mockGuzzle = $this->mock_guzzle_request(
+            $expectedResponse,
+            'https://content.dropboxapi.com/2/files/download_zip',
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer test_token',
+                    'Dropbox-API-Arg' => json_encode(['path' => '/Homework/math']),
+                ],
+                'body' => '',
+            ]
+        );
+
+        $client = new Client('test_token', $mockGuzzle);
+
+        $this->assertTrue(is_resource($client->downloadZip('Homework/math')));
+    }
+
+    /** @test */
     public function it_can_retrieve_metadata()
     {
         $mockGuzzle = $this->mock_guzzle_request(
