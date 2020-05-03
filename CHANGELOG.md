@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.13.0 - 2020-05-03
+
+- added `downloadZip` (#66)
+
 ## 1.12.0 - 2020-02-04
 
 - add `search` method
