@@ -2,6 +2,11 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.14.0 - 2020-05-11
+
+- add support for app authentication
+- Updated PHPDoc blocks
+
 ## 1.13.0 - 2020-05-03
 
 - added `downloadZip` (#66)
