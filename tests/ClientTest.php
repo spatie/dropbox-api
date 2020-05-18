@@ -14,7 +14,6 @@ use Spatie\Dropbox\UploadSessionCursor;
 
 class ClientTest extends TestCase
 {
-
     /** @test */
     public function it_can_be_instantiated_without_auth()
     {

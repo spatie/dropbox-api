@@ -75,7 +75,6 @@ class Client
      * If the source path is a folder all its contents will be copied.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-copy_v2
-     *
      */
     public function copy(string $fromPath, string $toPath): array
     {
@@ -370,10 +369,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move_v2
      *
-     * @param string $fromPath
-     * @param string $toPath
-     * @return array
-     * @throws Exception
+f
      */
     public function move(string $fromPath, string $toPath): array
     {
