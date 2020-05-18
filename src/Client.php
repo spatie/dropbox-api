@@ -255,10 +255,6 @@ class Client
      * Content-Type of the link is determined automatically by the file's mime type.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_temporary_link
-     *
-     * @param string $path
-     * @return string
-     * @throws Exception
      */
     public function getTemporaryLink(string $path): string
     {
@@ -280,12 +276,6 @@ class Client
      * Photos that are larger than 20MB in size won't be converted to a thumbnail.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_thumbnail
-     *
-     * @param string $path
-     * @param string $format
-     * @param string $size
-     * @return string
-     * @throws Exception
      */
     public function getThumbnail(string $path, string $format = 'jpeg', string $size = 'w64h64'): string
     {
@@ -311,11 +301,6 @@ class Client
      * retry logic, please hold off the retry until the previous request finishes.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder
-     *
-     * @param string $path
-     * @param bool $recursive
-     * @return array
-     * @throws Exception
      */
     public function listFolder(string $path = '', bool $recursive = false): array
     {
@@ -332,10 +317,6 @@ class Client
      * retrieve updates to the folder, following the same rules as documented for list_folder.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder-continue
-     *
-     * @param string $cursor
-     * @return array
-     * @throws Exception
      */
     public function listFolderContinue(string $cursor = ''): array
     {
