@@ -532,8 +532,8 @@ class Client
      * @param string|array $mode
      * @param bool $autorename
      * @param bool $mute
+     *
      * @return array
-     * @throws Exception
      */
     public function uploadSessionFinish($contents, UploadSessionCursor $cursor, string $path, $mode = 'add', $autorename = false, $mute = false): array
     {
