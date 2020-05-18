@@ -791,7 +791,7 @@ class Client
      */
     protected function getHeaders(array $headers = []): array
     {
-        $auth = []; // defaults no-auth, can be used for public endpoints
+        $auth = [];
         if ($this->accessToken || ($this->appKey && $this->appSecret)) {
             $auth = $this->accessToken ? $this->getHeadersForBearerToken() : $this->getHeadersForCredentials();
         }
