@@ -656,6 +656,7 @@ class Client
 
     /**
      * @param $contents
+     *
      * @return PumpStream|StreamInterface
      */
     protected function getStream($contents)
