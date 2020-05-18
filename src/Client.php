@@ -569,8 +569,6 @@ class Client
      * Revoke current access token.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#auth-token-revoke
-     *
-     * @throws Exception
      */
     public function revokeToken(): void
     {
