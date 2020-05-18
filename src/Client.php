@@ -230,10 +230,6 @@ class Client
      * Note: Metadata for the root folder is unsupported.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-get_metadata
-     *
-     * @param string $path
-     * @return array
-     * @throws Exception
      */
     public function getMetadata(string $path): array
     {
