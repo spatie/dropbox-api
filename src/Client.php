@@ -76,10 +76,6 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-copy_v2
      *
-     * @param string $fromPath
-     * @param string $toPath
-     * @return array
-     * @throws Exception
      */
     public function copy(string $fromPath, string $toPath): array
     {
