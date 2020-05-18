@@ -30,19 +30,13 @@ class Client
     const UPLOAD_SESSION_START = 0;
     const UPLOAD_SESSION_APPEND = 1;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $accessToken;
 
-    /**
-     * @var string
-     */
+    /** @var \GuzzleHttp\Client */
     protected $appKey;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $appSecret;
 
     /**
@@ -50,14 +44,10 @@ class Client
      */
     protected $client;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $maxChunkSize;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $maxUploadChunkRetries;
 
     /**
