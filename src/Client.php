@@ -505,8 +505,8 @@ class Client
      * @param string|StreamInterface $contents
      * @param UploadSessionCursor $cursor
      * @param bool $close
+     *
      * @return UploadSessionCursor
-     * @throws Exception
      */
     public function uploadSessionAppend($contents, UploadSessionCursor $cursor, bool $close = false): UploadSessionCursor
     {
