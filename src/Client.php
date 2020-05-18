@@ -605,10 +605,6 @@ f
         $this->rpcEndpointRequest('auth/token/revoke');
     }
 
-    /**
-     * @param string $path
-     * @return string
-     */
     protected function normalizePath(string $path): string
     {
         if (preg_match("/^id:.*|^rev:.*|^(ns:[0-9]+(\/.*)?)/", $path) === 1) {
@@ -620,11 +616,6 @@ f
         return ($path === '') ? '' : '/'.$path;
     }
 
-    /**
-     * @param string $subdomain
-     * @param string $endpoint
-     * @return string
-     */
     protected function getEndpointUrl(string $subdomain, string $endpoint): string
     {
         if (count($parts = explode('::', $endpoint)) === 2) {
