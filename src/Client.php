@@ -172,10 +172,6 @@ class Client
      * A successful response indicates that the file or folder was deleted.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-delete
-     *
-     * @param string $path
-     * @return array
-     * @throws Exception
      */
     public function delete(string $path): array
     {
@@ -329,8 +325,6 @@ class Client
      * If the source path is a folder all its contents will be moved.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move_v2
-     *
-f
      */
     public function move(string $fromPath, string $toPath): array
     {
