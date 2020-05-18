@@ -603,9 +603,11 @@ class Client
     /**
      * @param string $endpoint
      * @param array $arguments
-     * @param string $body
-     * @return ResponseInterface
-     * @throws Exception
+     * @param string|resource|StreamInterface $body
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     *
+     * @throws \Exception
      */
     public function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
     {
