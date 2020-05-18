@@ -130,11 +130,6 @@ class Client
      * Search a file or folder in the user's Dropbox.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-search
-     *
-     * @param string $query
-     * @param bool $includeHighlights
-     * @return array
-     * @throws Exception
      */
     public function search(string $query, bool $includeHighlights = false): array
     {
@@ -156,12 +151,6 @@ class Client
      * it may return link to the path itself and parent folders as described on docs.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
-     *
-     * @param string|null $path
-     * @param bool $direct_only
-     * @param string|null $cursor
-     * @return array
-     * @throws Exception
      */
     public function listSharedLinks(string $path = null, bool $direct_only = false, string $cursor = null): array
     {
