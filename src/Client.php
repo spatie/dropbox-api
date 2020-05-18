@@ -337,6 +337,7 @@ class Client
      * or if the resource size could not be determined (eg. a popen() stream).
      *
      * @param string|resource $contents
+     *
      * @return bool
      */
     protected function shouldUploadChunked($contents): bool
@@ -358,6 +359,7 @@ class Client
      * Check if the contents is a pipe stream (not seekable, no size defined).
      *
      * @param string|resource $contents
+     *
      * @return bool
      */
     protected function isPipe($contents): bool
@@ -557,7 +559,6 @@ class Client
      * @link https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
      *
      * @return array
-     * @throws Exception
      */
     public function getAccountInfo(): array
     {
