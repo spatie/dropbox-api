@@ -681,12 +681,6 @@ f
         return $response;
     }
 
-    /**
-     * @param string $endpoint
-     * @param array|null $parameters
-     * @return array
-     * @throws Exception
-     */
     public function rpcEndpointRequest(string $endpoint, array $parameters = null): array
     {
         try {
