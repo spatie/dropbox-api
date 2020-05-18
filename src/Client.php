@@ -16,19 +16,19 @@ use Spatie\Dropbox\Exceptions\BadRequest;
 
 class Client
 {
-    public const THUMBNAIL_FORMAT_JPEG = 'jpeg';
-    public const THUMBNAIL_FORMAT_PNG = 'png';
+    const THUMBNAIL_FORMAT_JPEG = 'jpeg';
+    const THUMBNAIL_FORMAT_PNG = 'png';
 
-    public const THUMBNAIL_SIZE_XS = 'w32h32';
-    public const THUMBNAIL_SIZE_S = 'w64h64';
-    public const THUMBNAIL_SIZE_M = 'w128h128';
-    public const THUMBNAIL_SIZE_L = 'w640h480';
-    public const THUMBNAIL_SIZE_XL = 'w1024h768';
+    const THUMBNAIL_SIZE_XS = 'w32h32';
+    const THUMBNAIL_SIZE_S = 'w64h64';
+    const THUMBNAIL_SIZE_M = 'w128h128';
+    const THUMBNAIL_SIZE_L = 'w640h480';
+    const THUMBNAIL_SIZE_XL = 'w1024h768';
 
-    public const MAX_CHUNK_SIZE = 1024 * 1024 * 150;
+    const MAX_CHUNK_SIZE = 1024 * 1024 * 150;
 
-    public const UPLOAD_SESSION_START = 0;
-    public const UPLOAD_SESSION_APPEND = 1;
+    const UPLOAD_SESSION_START = 0;
+    const UPLOAD_SESSION_APPEND = 1;
 
     /**
      * @var string
