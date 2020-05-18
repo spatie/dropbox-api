@@ -90,10 +90,6 @@ class Client
      * Create a folder at a given path.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-create_folder
-     *
-     * @param string $path
-     * @return array
-     * @throws Exception
      */
     public function createFolder(string $path): array
     {
@@ -116,11 +112,6 @@ class Client
      * shared folder settings). Only for paid users.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
-     *
-     * @param string $path
-     * @param array $settings
-     * @return array
-     * @throws Exception
      */
     public function createSharedLinkWithSettings(string $path, array $settings = []): array
     {
