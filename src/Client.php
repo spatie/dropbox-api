@@ -377,8 +377,8 @@ class Client
      * @param string $path
      * @param string|resource $contents
      * @param string $mode
+     *
      * @return array
-     * @throws Exception
      */
     public function upload(string $path, $contents, $mode = 'add'): array
     {
