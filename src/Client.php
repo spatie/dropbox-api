@@ -33,15 +33,13 @@ class Client
     /** @var string */
     protected $accessToken;
 
-    /** @var \GuzzleHttp\Client */
+    /** @var string */
     protected $appKey;
 
     /** @var string */
     protected $appSecret;
 
-    /**
-     * @var \GuzzleHttp\Client
-     */
+    /** @var \GuzzleHttp\Client */
     protected $client;
 
     /** @var int */
