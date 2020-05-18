@@ -435,8 +435,8 @@ class Client
      * @param int $type
      * @param Psr7\Stream $stream
      * @param int $chunkSize
-     * @param UploadSessionCursor|null $cursor
-     * @return UploadSessionCursor
+     * @param \Spatie\Dropbox\UploadSessionCursor|null $cursor
+     * @return \Spatie\Dropbox\UploadSessionCursor
      * @throws Exception
      */
     protected function uploadChunk($type, &$stream, $chunkSize, $cursor = null): UploadSessionCursor
@@ -506,7 +506,7 @@ class Client
      * @param UploadSessionCursor $cursor
      * @param bool $close
      *
-     * @return UploadSessionCursor
+     * @return \Spatie\Dropbox\UploadSessionCursor
      */
     public function uploadSessionAppend($contents, UploadSessionCursor $cursor, bool $close = false): UploadSessionCursor
     {
@@ -527,7 +527,7 @@ class Client
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
      *
      * @param string|StreamInterface $contents
-     * @param UploadSessionCursor $cursor
+     * @param \Spatie\Dropbox\UploadSessionCursor $cursor
      * @param string $path
      * @param string|array $mode
      * @param bool $autorename
@@ -655,7 +655,7 @@ class Client
     /**
      * @param $contents
      *
-     * @return PumpStream|StreamInterface
+     * @return \GuzzleHttp\Psr7\PumpStream|\GuzzleHttp\Psr7\Stream
      */
     protected function getStream($contents)
     {
