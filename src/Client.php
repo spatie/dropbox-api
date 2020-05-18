@@ -706,10 +706,6 @@ f
         return $response ?? [];
     }
 
-    /**
-     * @param ClientException $exception
-     * @return Exception
-     */
     protected function determineException(ClientException $exception): Exception
     {
         if (in_array($exception->getResponse()->getStatusCode(), [400, 409])) {
@@ -742,8 +738,6 @@ f
 
     /**
      * Get the access token.
-     *
-     * @return string
      */
     public function getAccessToken(): string
     {
@@ -752,9 +746,6 @@ f
 
     /**
      * Set the access token.
-     *
-     * @param string $accessToken
-     * @return Client
      */
     public function setAccessToken(string $accessToken): self
     {
@@ -765,9 +756,6 @@ f
 
     /**
      * Get the HTTP headers.
-     *
-     * @param array $headers
-     * @return array
      */
     protected function getHeaders(array $headers = []): array
     {
