@@ -480,8 +480,8 @@ class Client
      *
      * @param string|StreamInterface $contents
      * @param bool $close
+     *
      * @return UploadSessionCursor
-     * @throws Exception
      */
     public function uploadSessionStart($contents, bool $close = false): UploadSessionCursor
     {
