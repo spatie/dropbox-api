@@ -185,11 +185,11 @@ class Client
     /**
      * Download a file from a user's Dropbox.
      *
-     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-download
-     *
      * @param string $path
+     *
      * @return resource
-     * @throws Exception
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-download
      */
     public function download(string $path)
     {
