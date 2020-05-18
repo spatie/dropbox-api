@@ -411,8 +411,8 @@ class Client
      * @param string|resource $contents
      * @param string $mode
      * @param int|null $chunkSize
+     *
      * @return array
-     * @throws Exception
      */
     public function uploadChunked(string $path, $contents, $mode = 'add', $chunkSize = null): array
     {
