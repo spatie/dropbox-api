@@ -40,6 +40,18 @@ With an authorization token you can instantiate a `Spatie\Dropbox\Client`.
 $client = new Spatie\Dropbox\Client($authorizationToken);
 ```
 
+or alternatively you can authenticate as an App using your App Key & Secret.
+
+```php
+$client = new Spatie\Dropbox\Client([$appKey, $appSecret]);
+```
+
+If you only need to access the public endpoints you can instantiate `Spatie\Dropbox\Client` without any arguments.
+
+```php
+$client = new Spatie\Dropbox\Client();
+```
+
 Look in [the source code of `Spatie\Dropbox\Client`](https://github.com/spatie/dropbox-api/blob/master/src/Client.php) to discover the methods you can use.
 
 If you do not find your favorite method, you can directly use the `contentEndpointRequest` and `rpcEndpointRequest` functions.

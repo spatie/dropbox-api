@@ -15,9 +15,25 @@ use Spatie\Dropbox\UploadSessionCursor;
 class ClientTest extends TestCase
 {
     /** @test */
-    public function it_can_be_instantiated()
+    public function it_can_be_instantiated_without_auth()
+    {
+        $client = new Client();
+
+        $this->assertInstanceOf(Client::class, $client);
+    }
+
+    /** @test */
+    public function it_can_be_instantiated_with_token()
     {
         $client = new Client('test_token');
+
+        $this->assertInstanceOf(Client::class, $client);
+    }
+
+    /** @test */
+    public function it_can_be_instantiated_with_key_and_secret()
+    {
+        $client = new Client(['test_key', 'test_secret']);
 
         $this->assertInstanceOf(Client::class, $client);
     }

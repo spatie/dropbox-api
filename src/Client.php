@@ -33,6 +33,12 @@ class Client
     /** @var string */
     protected $accessToken;
 
+    /** @var string */
+    protected $appKey;
+
+    /** @var string */
+    protected $appSecret;
+
     /** @var \GuzzleHttp\Client */
     protected $client;
 
@@ -43,14 +49,19 @@ class Client
     protected $maxUploadChunkRetries;
 
     /**
-     * @param string $accessToken
+     * @param string|array|null $accessTokenOrAppCredentials
      * @param GuzzleClient|null $client
      * @param int $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
      */
-    public function __construct(string $accessToken, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0)
+    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0)
     {
-        $this->accessToken = $accessToken;
+        if (is_array($accessTokenOrAppCredentials)) {
+            [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
+        }
+        if (is_string($accessTokenOrAppCredentials)) {
+            $this->accessToken = $accessTokenOrAppCredentials;
+        }
 
         $this->client = $client ?? new GuzzleClient(['handler' => GuzzleFactory::handler()]);
 
@@ -102,7 +113,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
      */
-    public function createSharedLinkWithSettings(string $path, array $settings = [])
+    public function createSharedLinkWithSettings(string $path, array $settings = []): array
     {
         $parameters = [
             'path' => $this->normalizePath($path),
@@ -120,7 +131,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-search
      */
-    public function search(string $query, bool $includeHighlights = false)
+    public function search(string $query, bool $includeHighlights = false): array
     {
         $parameters = [
             'query' => $query,
@@ -399,7 +410,7 @@ class Client
      * @param string $path
      * @param string|resource $contents
      * @param string $mode
-     * @param int $chunkSize
+     * @param int|null $chunkSize
      *
      * @return array
      */
@@ -559,7 +570,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#auth-token-revoke
      */
-    public function revokeToken()
+    public function revokeToken(): void
     {
         $this->rpcEndpointRequest('auth/token/revoke');
     }
@@ -686,8 +697,31 @@ class Client
      */
     protected function getHeaders(array $headers = []): array
     {
-        return array_merge([
+        $auth = [];
+        if ($this->accessToken || ($this->appKey && $this->appSecret)) {
+            $auth = $this->accessToken ? $this->getHeadersForBearerToken() : $this->getHeadersForCredentials();
+        }
+
+        return array_merge($auth, $headers);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getHeadersForBearerToken()
+    {
+        return [
             'Authorization' => "Bearer {$this->accessToken}",
-        ], $headers);
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getHeadersForCredentials()
+    {
+        return [
+            'Authorization' => 'Basic '.base64_encode("{$this->appKey}:{$this->appSecret}"),
+        ];
     }
 }
