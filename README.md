@@ -40,7 +40,7 @@ With an authorization token you can instantiate a `Spatie\Dropbox\Client`.
 $client = new Spatie\Dropbox\Client($authorizationToken);
 ```
 
-or alternatively you can authetnicate as an App using your App Key & Secret.
+or alternatively you can authenticate as an App using your App Key & Secret.
 
 ```php
 $client = new Spatie\Dropbox\Client([$appKey, $appSecret]);
