@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.15.0 - 2020-07-09
+
+- allow Guzzle 7 (#70)
+
 ## 1.14.0 - 2020-05-11
 
 - add support for app authentication and no authentication
