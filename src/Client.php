@@ -56,8 +56,9 @@ class Client
      * @param GuzzleClient|null $client
      * @param int $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
+     * @param string $teamMemberID The team member ID to be specified for Dropbox business accounts
      */
-    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberID = "")
+    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberID = '')
     {
         if (is_array($accessTokenOrAppCredentials)) {
             [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
@@ -66,7 +67,7 @@ class Client
             $this->accessToken = $accessTokenOrAppCredentials;
         }
 
-        if ($teamMemberID !== "") {
+        if ($teamMemberID !== '') {
             $this->teamMemberID = $teamMemberID;
         }
 
@@ -713,7 +714,7 @@ class Client
             $auth = array_merge(
                 $auth,
                 [
-                    "Dropbox-API-Select-User" => $this->teamMemberID,
+                    'Dropbox-API-Select-User' => $this->teamMemberID,
                 ]
             );
         }
