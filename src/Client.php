@@ -34,7 +34,7 @@ class Client
     protected $accessToken;
 
     /** @var string */
-    protected $teamMemberID;
+    protected $teamMemberId;
 
     /** @var string */
     protected $appKey;
@@ -58,7 +58,7 @@ class Client
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
      * @param string $teamMemberID The team member ID to be specified for Dropbox business accounts
      */
-    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberID = '')
+    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberId = '')
     {
         if (is_array($accessTokenOrAppCredentials)) {
             [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
@@ -67,8 +67,8 @@ class Client
             $this->accessToken = $accessTokenOrAppCredentials;
         }
 
-        if ($teamMemberID !== '') {
-            $this->teamMemberID = $teamMemberID;
+        if ($teamMemberId !== '') {
+            $this->teamMemberId = $teamMemberId;
         }
 
         $this->client = $client ?? new GuzzleClient(['handler' => GuzzleFactory::handler()]);
@@ -710,11 +710,11 @@ class Client
             $auth = $this->accessToken ? $this->getHeadersForBearerToken() : $this->getHeadersForCredentials();
         }
 
-        if ($this->teamMemberID) {
+        if ($this->teamMemberId) {
             $auth = array_merge(
                 $auth,
                 [
-                    'Dropbox-API-Select-User' => $this->teamMemberID,
+                    'Dropbox-API-Select-User' => $this->teamMemberId,
                 ]
             );
         }
