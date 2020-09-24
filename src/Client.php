@@ -58,7 +58,7 @@ class Client
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
      * @param string $teamMemberID The team member ID to be specified for Dropbox business accounts
      */
-    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberId = '')
+    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberId = null)
     {
         if (is_array($accessTokenOrAppCredentials)) {
             [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
@@ -67,7 +67,7 @@ class Client
             $this->accessToken = $accessTokenOrAppCredentials;
         }
 
-        if ($teamMemberId !== '') {
+        if ($teamMemberId !== null) {
             $this->teamMemberId = $teamMemberId;
         }
 
