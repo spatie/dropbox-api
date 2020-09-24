@@ -33,6 +33,11 @@ class Client
     /** @var string */
     protected $accessToken;
 
+    /**
+     * @var string
+     */
+    protected $teamMemberID = null;
+
     /** @var string */
     protected $appKey;
 
@@ -54,13 +59,18 @@ class Client
      * @param int $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
      */
-    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0)
+    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize =
+    self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, $teamMemberID = null)
     {
         if (is_array($accessTokenOrAppCredentials)) {
             [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
         }
         if (is_string($accessTokenOrAppCredentials)) {
             $this->accessToken = $accessTokenOrAppCredentials;
+        }
+
+        if ($teamMemberID !== null){
+            $this->teamMemberID = $teamMemberID;
         }
 
         $this->client = $client ?? new GuzzleClient(['handler' => GuzzleFactory::handler()]);
@@ -700,6 +710,12 @@ class Client
         $auth = [];
         if ($this->accessToken || ($this->appKey && $this->appSecret)) {
             $auth = $this->accessToken ? $this->getHeadersForBearerToken() : $this->getHeadersForCredentials();
+        }
+
+        if ($this->teamMemberID !== null){
+            $auth = array_merge($auth, [
+                "Dropbox-API-Select-User" => $this->teamMemberID,
+            ]);
         }
 
         return array_merge($auth, $headers);
