@@ -59,8 +59,7 @@ class Client
      * @param int $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
      */
-    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize =
-    self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, $teamMemberID = null)
+    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberID = null)
     {
         if (is_array($accessTokenOrAppCredentials)) {
             [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
