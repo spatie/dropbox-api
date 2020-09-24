@@ -33,9 +33,7 @@ class Client
     /** @var string */
     protected $accessToken;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $teamMemberID;
 
     /** @var string */
