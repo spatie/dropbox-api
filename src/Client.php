@@ -66,7 +66,7 @@ class Client
             $this->accessToken = $accessTokenOrAppCredentials;
         }
 
-        if ($teamMemberID !== ""){
+        if ($teamMemberID !== "") {
             $this->teamMemberID = $teamMemberID;
         }
 
@@ -710,9 +710,12 @@ class Client
         }
 
         if ($this->teamMemberID) {
-            $auth = array_merge($auth, [
-                "Dropbox-API-Select-User" => $this->teamMemberID,
-            ]);
+            $auth = array_merge(
+                $auth,
+                [
+                    "Dropbox-API-Select-User" => $this->teamMemberID,
+                ]
+            );
         }
 
         return array_merge($auth, $headers);
