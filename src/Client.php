@@ -34,6 +34,9 @@ class Client
     protected $accessToken;
 
     /** @var string */
+    protected $teamMemberId;
+
+    /** @var string */
     protected $appKey;
 
     /** @var string */
@@ -53,14 +56,19 @@ class Client
      * @param GuzzleClient|null $client
      * @param int $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
+     * @param string $teamMemberID The team member ID to be specified for Dropbox business accounts
      */
-    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0)
+    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberId = null)
     {
         if (is_array($accessTokenOrAppCredentials)) {
             [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
         }
         if (is_string($accessTokenOrAppCredentials)) {
             $this->accessToken = $accessTokenOrAppCredentials;
+        }
+
+        if ($teamMemberId !== null) {
+            $this->teamMemberId = $teamMemberId;
         }
 
         $this->client = $client ?? new GuzzleClient(['handler' => GuzzleFactory::handler()]);
@@ -700,6 +708,15 @@ class Client
         $auth = [];
         if ($this->accessToken || ($this->appKey && $this->appSecret)) {
             $auth = $this->accessToken ? $this->getHeadersForBearerToken() : $this->getHeadersForCredentials();
+        }
+
+        if ($this->teamMemberId) {
+            $auth = array_merge(
+                $auth,
+                [
+                    'Dropbox-API-Select-User' => $this->teamMemberId,
+                ]
+            );
         }
 
         return array_merge($auth, $headers);
