@@ -25,7 +25,7 @@ $client->getTemporaryLink($path);
 
 ## Support us
 
-[![Image](https://github-ads.s3.eu-central-1.amazonaws.com/dropbox-api.jpg)](https://spatie.be/github-ad-click/dropbox-api)
+[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/dropbox-api.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/dropbox-api)
 
 We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
 
