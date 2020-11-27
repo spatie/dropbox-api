@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.16.1 - 2020-11-27
+
+- allow PHP 8
+
 ## 1.16.0 - 2020-09-25
 - allow the Client to work with Dropbox business accounts
 
