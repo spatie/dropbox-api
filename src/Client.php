@@ -31,8 +31,10 @@ class Client
     const UPLOAD_SESSION_START = 0;
     const UPLOAD_SESSION_APPEND = 1;
 
-    /** @var string */
-    protected $accessToken;
+    /**
+     * @var TokenProvider
+     */
+    private $tokenProvider;
 
     /** @var string */
     protected $teamMemberId;
@@ -64,8 +66,11 @@ class Client
         if (is_array($accessTokenOrAppCredentials)) {
             [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
         }
+        if ($accessTokenOrAppCredentials instanceof TokenProvider) {
+            $this->tokenProvider = $accessTokenOrAppCredentials;
+        }
         if (is_string($accessTokenOrAppCredentials)) {
-            $this->accessToken = $accessTokenOrAppCredentials;
+            $this->tokenProvider = new InMemoryTokenProvider($accessTokenOrAppCredentials);
         }
 
         if ($teamMemberId !== null) {
@@ -688,7 +693,7 @@ class Client
      */
     public function getAccessToken(): string
     {
-        return $this->accessToken;
+        return $this->tokenProvider->getToken();
     }
 
     /**
@@ -696,7 +701,8 @@ class Client
      */
     public function setAccessToken(string $accessToken): self
     {
-        $this->accessToken = $accessToken;
+        $this->tokenProvider = new InMemoryTokenProvider($accessToken);
+        // $this->accessToken = $accessToken;
 
         return $this;
     }
@@ -707,8 +713,10 @@ class Client
     protected function getHeaders(array $headers = []): array
     {
         $auth = [];
-        if ($this->accessToken || ($this->appKey && $this->appSecret)) {
-            $auth = $this->accessToken ? $this->getHeadersForBearerToken() : $this->getHeadersForCredentials();
+        if ($this->tokenProvider || ($this->appKey && $this->appSecret)) {
+            $auth = $this->tokenProvider
+                ? $this->getHeadersForBearerToken($this->tokenProvider->getToken())
+                : $this->getHeadersForCredentials();
         }
 
         if ($this->teamMemberId) {
@@ -726,10 +734,10 @@ class Client
     /**
      * @return array
      */
-    protected function getHeadersForBearerToken()
+    protected function getHeadersForBearerToken($token)
     {
         return [
-            'Authorization' => "Bearer {$this->accessToken}",
+            'Authorization' => "Bearer {$token}",
         ];
     }
 
