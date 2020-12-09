@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.17.0 - 2020-12-08
+
+- `TokenProvider` interface for accesstokens (#76)
+
 ## 1.16.1 - 2020-11-27
 
 - allow PHP 8
