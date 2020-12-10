@@ -49,6 +49,26 @@ With an authorization token you can instantiate a `Spatie\Dropbox\Client`.
 $client = new Spatie\Dropbox\Client($authorizationToken);
 ```
 
+or alternatively you can implement `Spatie\Dropbox\TokenProvider` 
+which will provide the access-token from its 
+`TokenProvider->getToken(): string` method.
+
+If you use oauth2 to authenticate and to acquire refresh-tokens and access-tokens,
+(like [thephpleague/oauth2-client](https://github.com/thephpleague/oauth2-client)),
+you can create an adapter that internally takes care of token-expiration and refreshing tokens, 
+and at runtime will supply the access-token via the `TokenProvider->getToken(): string` method.
+
+*(Dropbox announced they will be moving to short-lived access_tokens mid 2021).*
+
+
+```php
+// implements Spatie\Dropbox\TokenProvider
+$tokenProvider = new AutoRefreshingDropBoxTokenService($refreshToken);
+$client = new Spatie\Dropbox\Client($tokenProvider);
+```
+
+
+
 or alternatively you can authenticate as an App using your App Key & Secret.
 
 ```php
@@ -60,6 +80,8 @@ If you only need to access the public endpoints you can instantiate `Spatie\Drop
 ```php
 $client = new Spatie\Dropbox\Client();
 ```
+
+## Dropbox Endpoints
 
 Look in [the source code of `Spatie\Dropbox\Client`](https://github.com/spatie/dropbox-api/blob/master/src/Client.php) to discover the methods you can use.
 
