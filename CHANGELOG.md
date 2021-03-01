@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.17.1 - 2021-03-01
+
+- allow graham-campbell/guzzle-factory v5 (#79)
+
 ## 1.17.0 - 2020-12-08
 
 - `TokenProvider` interface for accesstokens (#76)
