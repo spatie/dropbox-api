@@ -371,6 +371,7 @@ class ClientTest extends TestCase
                     'Dropbox-API-Arg' => json_encode([
                         'path' => '/Homework/math/answers.txt',
                         'mode' => 'add',
+                        'autorename' => false,
                     ]),
                     'Content-Type' => 'application/octet-stream',
                 ],
