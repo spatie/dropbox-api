@@ -1,10 +1,10 @@
 # A minimal implementation of Dropbox API v2
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/dropbox-api.svg?style=flat-square)](https://packagist.org/packages/spatie/dropbox-api)
-[![Build Status](https://img.shields.io/travis/spatie/dropbox-api/master.svg?style=flat-square)](https://travis-ci.org/spatie/dropbox-api)
-[![StyleCI](https://styleci.io/repos/88621289/shield?branch=master)](https://styleci.io/repos/88621289)
-[![Quality Score](https://img.shields.io/scrutinizer/g/spatie/dropbox-api.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/dropbox-api)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spatie/dropbox-api/run-tests?label=tests)](https://github.com/spatie/dropbox-api/actions?query=workflow%3ATests+branch%3Amaster)
+[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/spatie/dropbox-api/Check%20&%20fix%20styling?label=code%20style)](https://github.com/spatie/dropbox-api/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/dropbox-api.svg?style=flat-square)](https://packagist.org/packages/spatie/dropbox-api)
+
 
 This is a minimal PHP implementation of the [Dropbox API v2](https://www.dropbox.com/developers/documentation/http/overview). It contains only the methods needed for [our flysystem-dropbox adapter](https://github.com/spatie/flysystem-dropbox). We are open however to PRs that add extra methods to the client. 
 
