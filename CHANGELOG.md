@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.18.0 - 2021-05-27
+
+- add autorename option to upload method (#86)
+
 ## 1.17.1 - 2021-03-01
 
 - allow graham-campbell/guzzle-factory v5 (#79)
