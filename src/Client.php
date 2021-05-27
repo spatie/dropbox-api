@@ -483,6 +483,7 @@ class Client
                 $stream->seek($pos, SEEK_SET);
                 goto tryUpload;
             }
+
             throw $exception;
         }
     }
