@@ -404,7 +404,7 @@ class Client
         $arguments = [
             'path' => $this->normalizePath($path),
             'mode' => $mode,
-            'autorename' => $autorename
+            'autorename' => $autorename,
         ];
 
         $response = $this->contentEndpointRequest('files/upload', $arguments, $contents);
