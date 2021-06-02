@@ -705,7 +705,6 @@ class Client
     public function setAccessToken(string $accessToken): self
     {
         $this->tokenProvider = new InMemoryTokenProvider($accessToken);
-        // $this->accessToken = $accessToken;
 
         return $this;
     }
