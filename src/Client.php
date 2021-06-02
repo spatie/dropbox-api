@@ -391,10 +391,11 @@ class Client
      * @param string $path
      * @param string|resource $contents
      * @param string $mode
+     * @param bool $autorename
      *
      * @return array
      */
-    public function upload(string $path, $contents, $mode = 'add'): array
+    public function upload(string $path, $contents, $mode = 'add', $autorename = false): array
     {
         if ($this->shouldUploadChunked($contents)) {
             return $this->uploadChunked($path, $contents, $mode);
@@ -403,6 +404,7 @@ class Client
         $arguments = [
             'path' => $this->normalizePath($path),
             'mode' => $mode,
+            'autorename' => $autorename,
         ];
 
         $response = $this->contentEndpointRequest('files/upload', $arguments, $contents);
@@ -481,6 +483,7 @@ class Client
                 $stream->seek($pos, SEEK_SET);
                 goto tryUpload;
             }
+
             throw $exception;
         }
     }
