@@ -350,7 +350,7 @@ class ClientTest extends TestCase
                 'json' => [
                     'from_path' => '/from/path/file.txt',
                     'to_path' => '',
-                    'autorename' => false
+                    'autorename' => false,
                 ],
             ]
         );
