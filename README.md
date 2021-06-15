@@ -85,6 +85,32 @@ $client = new Spatie\Dropbox\Client();
 
 Look in [the source code of `Spatie\Dropbox\Client`](https://github.com/spatie/dropbox-api/blob/master/src/Client.php) to discover the methods you can use.
 
+Here's an example:
+
+```php
+$content = 'hello, world';
+$client->upload('/dropboxpath/filename.txt', $content, $mode='add');
+
+$from = '/dropboxpath/somefile.txt';
+$to = '/dropboxpath/archive/somefile.txt';
+$client->move($from, $to);
+```
+
+If the destination filename already exists, dropbox will throw an Exception with 'to/conflict/file/..'
+
+The ``upload()`` and ``move()`` methods have an optional extra 'autorename' argument 
+to try and let dropbox automatically rename the file if there is such a conflict.
+
+Here's an example:
+
+```php
+$from = '/dropboxpath/somefile.txt';
+$to = '/dropboxpath/archive/somefile.txt';
+$client->move($from, $to, $autorename=true);
+// with autorename results in 'somefile (1).txt'
+```
+
+
 If you do not find your favorite method, you can directly use the `contentEndpointRequest` and `rpcEndpointRequest` functions.
 
 ```php
