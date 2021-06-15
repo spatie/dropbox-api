@@ -336,11 +336,12 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move_v2
      */
-    public function move(string $fromPath, string $toPath): array
+    public function move(string $fromPath, string $toPath, bool $autorename = false): array
     {
         $parameters = [
             'from_path' => $this->normalizePath($fromPath),
             'to_path' => $this->normalizePath($toPath),
+            'autorename' => $autorename,
         ];
 
         return $this->rpcEndpointRequest('files/move_v2', $parameters);
