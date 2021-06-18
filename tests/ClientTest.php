@@ -350,13 +350,14 @@ class ClientTest extends TestCase
                 'json' => [
                     'from_path' => '/from/path/file.txt',
                     'to_path' => '',
+                    'autorename' => false,
                 ],
             ]
         );
 
         $client = new Client('test_token', $mockGuzzle);
 
-        $this->assertEquals($expectedResponse, $client->move('/from/path/file.txt', ''));
+        $this->assertEquals($expectedResponse, $client->move('/from/path/file.txt', '', false));
     }
 
     /** @test */
