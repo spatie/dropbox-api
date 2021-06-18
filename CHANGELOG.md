@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.19.0 - 2021-06-18
+
+- add autoRename parameter for move() method (#89)
+
 ## 1.18.0 - 2021-05-27
 
 - add autorename option to upload method (#86)
