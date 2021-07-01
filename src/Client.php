@@ -673,7 +673,7 @@ class Client
     /**
      * @param $contents
      *
-     * @return \GuzzleHttp\Psr7\PumpStream|\GuzzleHttp\Psr7\Stream
+     * @return \GuzzleHttp\Psr7\PumpStream|\GuzzleHttp\Psr7\Stream|StreamInterface
      */
     protected function getStream($contents)
     {
@@ -689,7 +689,7 @@ class Client
             });
         }
 
-        return Psr7\stream_for($contents);
+        return Psr7\Utils::streamFor($contents);
     }
 
     /**
