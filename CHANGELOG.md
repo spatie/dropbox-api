@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.19.1 - 2021-07-04
+
+- fix compability with guzzlehttp/psr7 2.0 (#91)
+
 ## 1.19.0 - 2021-06-18
 
 - add autoRename parameter for move() method (#89)
