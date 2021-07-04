@@ -47,5 +47,8 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "conflict": {
+        "guzzlehttp/psr7": "<1.7.0"
     }
 }
