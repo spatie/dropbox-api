@@ -166,7 +166,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
      */
-    public function listSharedLinks(string $path = null, bool $direct_only = false, string $cursor = null): array
+    public function listSharedLinks(string $path = null, bool $direct_only = false, string $cursor = null, array $links = []): array
     {
         $parameters = [
             'path' => $path ? $this->normalizePath($path) : null,
@@ -176,7 +176,15 @@ class Client
 
         $body = $this->rpcEndpointRequest('sharing/list_shared_links', $parameters);
 
-        return $body['links'];
+        if (!empty($body['links'])) {
+            $links = array_merge($links, $body['links']);
+        }
+
+        if (!empty($body['cursor'])) {
+            return $this->listSharedLinks($path, $direct_only, $body['cursor'], $links);
+        }
+
+        return $links;
     }
 
     /**
