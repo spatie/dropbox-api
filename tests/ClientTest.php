@@ -624,6 +624,40 @@ class ClientTest extends TestCase
     }
 
     /** @test */
+    public function content_endpoint_request_can_be_refreshed()
+    {
+        $token_provider = $this->createConfiguredMock(RefreshableTokenProvider::class, [
+            'getToken' => 'test_token',
+        ]);
+
+        $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
+            ->setMethods(['post'])
+            ->getMock();
+
+        $mockGuzzle->expects($this->exactly(2))
+            ->method('post')
+            ->willThrowException(
+                $e = new ClientException(
+                    'there was an error',
+                    $this->getMockBuilder(RequestInterface::class)->getMock(),
+                    $this->getMockBuilder(ResponseInterface::class)->getMock()
+                )
+            );
+
+        $token_provider->expects($this->once())
+            ->method('refresh')
+            ->with($e)
+            ->willReturn(true);
+
+        $client = new Client($token_provider, $mockGuzzle);
+
+        $this->expectException(ClientException::class);
+
+        $client->contentEndpointRequest('testing/endpoint', []);
+    }
+
+
+    /** @test */
     public function rpc_endpoint_request_can_throw_exception_with_400_status_code()
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)

@@ -622,7 +622,7 @@ class Client
      *
      * @throws \Exception
      */
-    public function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
+    public function contentEndpointRequest(string $endpoint, array $arguments, $body = '', bool $is_refreshed = false): ResponseInterface
     {
         $headers = ['Dropbox-API-Arg' => json_encode($arguments)];
 
@@ -636,7 +636,14 @@ class Client
                 'body' => $body,
             ]);
         } catch (ClientException $exception) {
-            throw $this->determineException($exception);
+            if (
+                $is_refreshed
+                || !$this->tokenProvider instanceof RefreshableTokenProvider
+                || !$this->tokenProvider->refresh($exception)
+            ) {
+                throw $this->determineException($exception);
+            }
+            $response = $this->contentEndpointRequest($endpoint, $arguments, $body, true);
         }
 
         return $response;
