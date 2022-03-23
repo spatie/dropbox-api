@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use Spatie\Dropbox\RefreshableTokenProvider;
 use Spatie\Dropbox\UploadSessionCursor;
 
 class ClientTest extends TestCase
@@ -690,6 +691,51 @@ class ClientTest extends TestCase
         $this->expectException(BadRequest::class);
 
         $client->rpcEndpointRequest('testing/endpoint', []);
+    }
+
+    /** @test */
+    public function rpc_endpoint_request_can_be_retried_once() {
+        $body = [
+            'error' => [
+                '.tag' => 'machine_readable_error_code',
+            ],
+            'error_summary' => 'Human readable error code',
+        ];
+
+        $token_provider = $this->createConfiguredMock(RefreshableTokenProvider::class, [
+            'getToken' => 'test_token',
+        ]);
+
+        $mockResponse = $this->createConfiguredMock(ResponseInterface::class, [
+            'getStatusCode' => 409,
+            'getBody' => json_encode($body),
+        ]);
+
+        $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
+            ->setMethods(['post'])
+            ->getMock();
+
+        $mockGuzzle->expects($this->exactly(2))
+            ->method('post')
+            ->willThrowException(
+                $e = new ClientException(
+                    'there was an error',
+                    $this->getMockBuilder(RequestInterface::class)->getMock(),
+                    $mockResponse
+                )
+            );
+
+
+        $token_provider->expects($this->once())
+            ->method('refresh')
+            ->with($e)
+            ->willReturn(true);
+
+        $this->expectException(BadRequest::class);
+
+        $client = new Client($token_provider, $mockGuzzle);
+
+        $client->rpcEndpointRequest('testing/endpoint');
     }
 
     /** @test */
