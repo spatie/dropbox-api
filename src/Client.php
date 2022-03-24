@@ -622,7 +622,7 @@ class Client
      *
      * @throws \Exception
      */
-    public function contentEndpointRequest(string $endpoint, array $arguments, $body = '', bool $is_refreshed = false): ResponseInterface
+    public function contentEndpointRequest(string $endpoint, array $arguments, $body = '', bool $isRefreshed = false): ResponseInterface
     {
         $headers = ['Dropbox-API-Arg' => json_encode($arguments)];
 
@@ -637,7 +637,7 @@ class Client
             ]);
         } catch (ClientException $exception) {
             if (
-                $is_refreshed
+                $isRefreshed
                 || ! $this->tokenProvider instanceof RefreshableTokenProvider
                 || ! $this->tokenProvider->refresh($exception)
             ) {
@@ -649,7 +649,7 @@ class Client
         return $response;
     }
 
-    public function rpcEndpointRequest(string $endpoint, array $parameters = null, bool $is_refreshed = false): array
+    public function rpcEndpointRequest(string $endpoint, array $parameters = null, bool $isRefreshed = false): array
     {
         try {
             $options = ['headers' => $this->getHeaders()];
@@ -661,7 +661,7 @@ class Client
             $response = $this->client->post($this->getEndpointUrl('api', $endpoint), $options);
         } catch (ClientException $exception) {
             if (
-                $is_refreshed
+                $isRefreshed
                 || ! $this->tokenProvider instanceof RefreshableTokenProvider
                 || ! $this->tokenProvider->refresh($exception)
             ) {
