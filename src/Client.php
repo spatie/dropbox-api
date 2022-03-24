@@ -638,8 +638,8 @@ class Client
         } catch (ClientException $exception) {
             if (
                 $is_refreshed
-                || !$this->tokenProvider instanceof RefreshableTokenProvider
-                || !$this->tokenProvider->refresh($exception)
+                || ! $this->tokenProvider instanceof RefreshableTokenProvider
+                || ! $this->tokenProvider->refresh($exception)
             ) {
                 throw $this->determineException($exception);
             }
@@ -662,8 +662,8 @@ class Client
         } catch (ClientException $exception) {
             if (
                 $is_refreshed
-                || !$this->tokenProvider instanceof RefreshableTokenProvider
-                || !$this->tokenProvider->refresh($exception)
+                || ! $this->tokenProvider instanceof RefreshableTokenProvider
+                || ! $this->tokenProvider->refresh($exception)
             ) {
                 throw $this->determineException($exception);
             }

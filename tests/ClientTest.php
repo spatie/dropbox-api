@@ -656,7 +656,6 @@ class ClientTest extends TestCase
         $client->contentEndpointRequest('testing/endpoint', []);
     }
 
-
     /** @test */
     public function rpc_endpoint_request_can_throw_exception_with_400_status_code()
     {
@@ -728,7 +727,8 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function rpc_endpoint_request_can_be_retried_once() {
+    public function rpc_endpoint_request_can_be_retried_once()
+    {
         $body = [
             'error' => [
                 '.tag' => 'machine_readable_error_code',
