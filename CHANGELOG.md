@@ -2,6 +2,10 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## Unreleased
+
+- Added refreshable token provider interface.
+
 ## 1.19.1 - 2021-07-04
 
 - fix compability with guzzlehttp/psr7 2.0 (#91)

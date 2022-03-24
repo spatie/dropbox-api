@@ -622,7 +622,7 @@ class Client
      *
      * @throws \Exception
      */
-    public function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
+    public function contentEndpointRequest(string $endpoint, array $arguments, $body = '', bool $is_refreshed = false): ResponseInterface
     {
         $headers = ['Dropbox-API-Arg' => json_encode($arguments)];
 
@@ -636,13 +636,20 @@ class Client
                 'body' => $body,
             ]);
         } catch (ClientException $exception) {
-            throw $this->determineException($exception);
+            if (
+                $is_refreshed
+                || !$this->tokenProvider instanceof RefreshableTokenProvider
+                || !$this->tokenProvider->refresh($exception)
+            ) {
+                throw $this->determineException($exception);
+            }
+            $response = $this->contentEndpointRequest($endpoint, $arguments, $body, true);
         }
 
         return $response;
     }
 
-    public function rpcEndpointRequest(string $endpoint, array $parameters = null): array
+    public function rpcEndpointRequest(string $endpoint, array $parameters = null, bool $is_refreshed = false): array
     {
         try {
             $options = ['headers' => $this->getHeaders()];
@@ -653,12 +660,18 @@ class Client
 
             $response = $this->client->post($this->getEndpointUrl('api', $endpoint), $options);
         } catch (ClientException $exception) {
-            throw $this->determineException($exception);
+            if (
+                $is_refreshed
+                || !$this->tokenProvider instanceof RefreshableTokenProvider
+                || !$this->tokenProvider->refresh($exception)
+            ) {
+                throw $this->determineException($exception);
+            }
+
+            $response = $this->rpcEndpointRequest($endpoint, $parameters, true);
         }
 
-        $response = json_decode($response->getBody(), true);
-
-        return $response ?? [];
+        return json_decode($response->getBody(), true) ?? [];
     }
 
     protected function determineException(ClientException $exception): Exception
