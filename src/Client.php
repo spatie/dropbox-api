@@ -668,7 +668,7 @@ class Client
                 throw $this->determineException($exception);
             }
 
-            $response = $this->rpcEndpointRequest($endpoint, $parameters, true);
+            return $this->rpcEndpointRequest($endpoint, $parameters, true);
         }
 
         return json_decode($response->getBody(), true) ?? [];
