@@ -772,60 +772,60 @@ class ClientTest extends TestCase
         $client->rpcEndpointRequest('testing/endpoint');
     }
 
-	/** @test */
-	public function rpc_endpoint_request_can_be_retried_with_success()
-	{
-		$errorBody = [
-			'error' => [
-				'.tag' => 'expired_access_token',
-			],
-			'error_summary' => 'expired_access_token/',
-		];
+    /** @test */
+    public function rpc_endpoint_request_can_be_retried_with_success()
+    {
+        $errorBody = [
+            'error' => [
+                '.tag' => 'expired_access_token',
+            ],
+            'error_summary' => 'expired_access_token/',
+        ];
 
-		$successBody = [
-			'access_token' => 'new_token',
-		];
+        $successBody = [
+            'access_token' => 'new_token',
+        ];
 
-		$token_provider = $this->createConfiguredMock(RefreshableTokenProvider::class, [
-			'getToken' => 'test_token',
-		]);
+        $token_provider = $this->createConfiguredMock(RefreshableTokenProvider::class, [
+            'getToken' => 'test_token',
+        ]);
 
-		$errorResponse = $this->createConfiguredMock(ResponseInterface::class, [
-			'getStatusCode' => 409,
-			'getBody' => json_encode($errorBody),
-		]);
+        $errorResponse = $this->createConfiguredMock(ResponseInterface::class, [
+            'getStatusCode' => 409,
+            'getBody' => json_encode($errorBody),
+        ]);
 
-		$successResponse = $this->createConfiguredMock(ResponseInterface::class, [
-			'getStatusCode' => 200,
-			'getBody' => json_encode($successBody),
-		]);
+        $successResponse = $this->createConfiguredMock(ResponseInterface::class, [
+            'getStatusCode' => 200,
+            'getBody' => json_encode($successBody),
+        ]);
 
-		$mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-			->setMethods(['post'])
-			->getMock();
+        $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
+            ->setMethods(['post'])
+            ->getMock();
 
-		$e = new ClientException(
-			'there was an error',
-			$this->getMockBuilder(RequestInterface::class)->getMock(),
-			$errorResponse
-		);
+        $e = new ClientException(
+            'there was an error',
+            $this->getMockBuilder(RequestInterface::class)->getMock(),
+            $errorResponse
+        );
 
-		$mockGuzzle->expects($this->exactly(2))
-			->method('post')
-			->willReturnOnConsecutiveCalls(
-				$this->throwException($e),
-				$successResponse
-			);
+        $mockGuzzle->expects($this->exactly(2))
+            ->method('post')
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException($e),
+                $successResponse
+            );
 
-		$token_provider->expects($this->once())
-			->method('refresh')
-			->with($e)
-			->willReturn(true);
+        $token_provider->expects($this->once())
+            ->method('refresh')
+            ->with($e)
+            ->willReturn(true);
 
-		$client = new Client($token_provider, $mockGuzzle);
+        $client = new Client($token_provider, $mockGuzzle);
 
-		$this->assertEquals($successBody, $client->rpcEndpointRequest('testing/endpoint'));
-	}
+        $this->assertEquals($successBody, $client->rpcEndpointRequest('testing/endpoint'));
+    }
 
     /** @test */
     public function it_can_create_a_shared_link()
