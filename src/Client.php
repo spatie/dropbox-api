@@ -496,7 +496,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
      *
-     * @param string|StreamInterface $contents
+     * @param string|resource|StreamInterface $contents
      * @param bool $close
      *
      * @return UploadSessionCursor
