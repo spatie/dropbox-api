@@ -943,6 +943,18 @@ class ClientTest extends TestCase
     }
 
     /** @test */
+    public function setting_the_namespace_id_will_add_it_to_the_header()
+    {
+        $client = new Client('namespace_id');
+
+        $expectedNamespaceId = '012345';
+        $client->setNamespaceId($expectedNamespaceId);
+
+        $getHeadersMethod = static::getMethod('getHeaders');
+        $this->assertArrayHasKey('Dropbox-API-Path-Root', $getHeadersMethod->invoke($client));
+    }
+
+    /** @test */
     public function it_can_change_the_endpoint_subdomain()
     {
         $client = new Client('test_token');
