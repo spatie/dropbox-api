@@ -764,7 +764,7 @@ class Client
                     'Dropbox-API-Path-Root' => json_encode([
                         '.tag' => 'namespace_id',
                         'namespace_id' => $this->namespaceId,
-                    ])
+                    ]),
                 ]
             );
         }
