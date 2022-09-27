@@ -2,6 +2,18 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.21.0 - 2022-09-27
+
+### What's Changed
+
+- Add ability to set the namespace ID for requests by @rstefanic in https://github.com/spatie/dropbox-api/pull/105
+
+### New Contributors
+
+- @rstefanic made their first contribution in https://github.com/spatie/dropbox-api/pull/105
+
+**Full Changelog**: https://github.com/spatie/dropbox-api/compare/1.20.2...1.21.0
+
 ## 1.20.2 - 2022-06-24
 
 ### What's Changed
