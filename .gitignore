@@ -4,5 +4,3 @@ composer.lock
 docs
 vendor
 .php-cs-fixer.cache
-/tags
-/tags.*
