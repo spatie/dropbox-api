@@ -23,9 +23,12 @@ class BadRequest extends Exception
     {
         $this->response = $response;
 
-        $body = json_decode($response->getBody(), true);
+        $content = (string) $response->getBody();
+        $body = json_decode($content, true);
 
-        if ($body !== null) {
+        if (strlen($content) > 0 && is_null($body)) {
+            parent::__construct($content);
+        } else if (! is_null($body)) {
             if (isset($body['error']['.tag'])) {
                 $this->dropboxCode = $body['error']['.tag'];
             }
