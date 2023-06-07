@@ -4,6 +4,7 @@ namespace Spatie\Dropbox\Test;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -703,7 +704,7 @@ class ClientTest extends TestCase
             ->willReturn(409);
         $mockResponse->expects($this->any())
             ->method('getBody')
-            ->willReturn(json_encode($body));
+            ->willReturn($this->createStreamFromString(json_encode($body)));
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
             ->setMethods(['post'])
@@ -742,7 +743,7 @@ class ClientTest extends TestCase
 
         $mockResponse = $this->createConfiguredMock(ResponseInterface::class, [
             'getStatusCode' => 409,
-            'getBody' => json_encode($body),
+            'getBody' => $this->createStreamFromString(json_encode($body)),
         ]);
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
@@ -792,12 +793,12 @@ class ClientTest extends TestCase
 
         $errorResponse = $this->createConfiguredMock(ResponseInterface::class, [
             'getStatusCode' => 409,
-            'getBody' => json_encode($errorBody),
+            'getBody' => $this->createStreamFromString(json_encode($errorBody)),
         ]);
 
         $successResponse = $this->createConfiguredMock(ResponseInterface::class, [
             'getStatusCode' => 200,
-            'getBody' => json_encode($successBody),
+            'getBody' => $this->createStreamFromString(json_encode($successBody)),
         ]);
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
@@ -971,9 +972,15 @@ class ClientTest extends TestCase
             ->getMock();
 
         if ($expectedResponse) {
-            $mockResponse->expects($this->once())
-                ->method('getBody')
-                ->willReturn($expectedResponse);
+            if (is_string($expectedResponse)) {
+                $mockResponse->expects($this->once())
+                    ->method('getBody')
+                    ->willReturn($this->createStreamFromString($expectedResponse));
+            } else {
+                $mockResponse->expects($this->once())
+                    ->method('getBody')
+                    ->willReturn($expectedResponse);
+            }
         }
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
@@ -1035,5 +1042,17 @@ class ClientTest extends TestCase
         $method->setAccessible(true);
 
         return $method;
+    }
+
+    /**
+     * @param string $content
+     * @return Stream
+     */
+    private function createStreamFromString($content)
+    {
+        $resource = fopen('php://memory','r+');
+        fwrite($resource, $content);
+
+        return new Stream($resource);
     }
 }
