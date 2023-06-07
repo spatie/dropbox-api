@@ -1,0 +1,5 @@
+parameters:
+    paths:
+        - src
+        - tests
+    level: 5

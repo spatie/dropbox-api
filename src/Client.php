@@ -37,10 +37,7 @@ class Client
 
     const UPLOAD_SESSION_APPEND = 1;
 
-    /**
-     * @var TokenProvider
-     */
-    private $tokenProvider;
+    private ?TokenProvider $tokenProvider = null;
 
     /** @var string */
     protected $teamMemberId;
@@ -64,11 +61,11 @@ class Client
     protected $maxUploadChunkRetries;
 
     /**
-     * @param  string|array|null  $accessTokenOrAppCredentials
+     * @param  string|array|TokenProvider|null  $accessTokenOrAppCredentials
      * @param  GuzzleClient|null  $client
      * @param  int  $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
      * @param  int  $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
-     * @param  string  $teamMemberID The team member ID to be specified for Dropbox business accounts
+     * @param  string  $teamMemberId The team member ID to be specified for Dropbox business accounts
      */
     public function __construct($accessTokenOrAppCredentials = null, ClientInterface $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberId = null)
     {
@@ -365,10 +362,6 @@ class Client
         $size = is_string($contents) ? strlen($contents) : fstat($contents)['size'];
 
         if ($this->isPipe($contents)) {
-            return true;
-        }
-
-        if ($size === null) {
             return true;
         }
 
