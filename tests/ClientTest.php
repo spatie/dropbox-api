@@ -1050,7 +1050,7 @@ class ClientTest extends TestCase
      */
     private function createStreamFromString($content)
     {
-        $resource = fopen('php://memory','r+');
+        $resource = fopen('php://memory', 'r+');
         fwrite($resource, $content);
 
         return new Stream($resource);
