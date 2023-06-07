@@ -18,17 +18,23 @@ use Spatie\Dropbox\Exceptions\BadRequest;
 class Client
 {
     const THUMBNAIL_FORMAT_JPEG = 'jpeg';
+
     const THUMBNAIL_FORMAT_PNG = 'png';
 
     const THUMBNAIL_SIZE_XS = 'w32h32';
+
     const THUMBNAIL_SIZE_S = 'w64h64';
+
     const THUMBNAIL_SIZE_M = 'w128h128';
+
     const THUMBNAIL_SIZE_L = 'w640h480';
+
     const THUMBNAIL_SIZE_XL = 'w1024h768';
 
     const MAX_CHUNK_SIZE = 1024 * 1024 * 150;
 
     const UPLOAD_SESSION_START = 0;
+
     const UPLOAD_SESSION_APPEND = 1;
 
     /**
@@ -58,11 +64,11 @@ class Client
     protected $maxUploadChunkRetries;
 
     /**
-     * @param string|array|null $accessTokenOrAppCredentials
-     * @param GuzzleClient|null $client
-     * @param int $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
-     * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
-     * @param string $teamMemberID The team member ID to be specified for Dropbox business accounts
+     * @param  string|array|null  $accessTokenOrAppCredentials
+     * @param  GuzzleClient|null  $client
+     * @param  int  $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
+     * @param  int  $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
+     * @param  string  $teamMemberID The team member ID to be specified for Dropbox business accounts
      */
     public function __construct($accessTokenOrAppCredentials = null, ClientInterface $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberId = null)
     {
@@ -202,7 +208,6 @@ class Client
     /**
      * Download a file from a user's Dropbox.
      *
-     * @param string $path
      *
      * @return resource
      *
@@ -224,7 +229,6 @@ class Client
      * The folder must be less than 20 GB in size and have fewer than 10,000 total files.
      * The input cannot be a single file. Any single file must be less than 4GB in size.
      *
-     * @param string $path
      *
      * @return resource
      *
@@ -354,9 +358,7 @@ class Client
      * The file should be uploaded in chunks if it size exceeds the 150 MB threshold
      * or if the resource size could not be determined (eg. a popen() stream).
      *
-     * @param string|resource $contents
-     *
-     * @return bool
+     * @param  string|resource  $contents
      */
     protected function shouldUploadChunked($contents): bool
     {
@@ -376,9 +378,7 @@ class Client
     /**
      * Check if the contents is a pipe stream (not seekable, no size defined).
      *
-     * @param string|resource $contents
-     *
-     * @return bool
+     * @param  string|resource  $contents
      */
     protected function isPipe($contents): bool
     {
@@ -392,12 +392,9 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload
      *
-     * @param string $path
-     * @param string|resource $contents
-     * @param string $mode
-     * @param bool $autorename
-     *
-     * @return array
+     * @param  string|resource  $contents
+     * @param  string  $mode
+     * @param  bool  $autorename
      */
     public function upload(string $path, $contents, $mode = 'add', $autorename = false): array
     {
@@ -427,12 +424,9 @@ class Client
      * The chunk size will affect directly the memory usage, so be careful.
      * Large chunks tends to speed up the upload, while smaller optimizes memory usage.
      *
-     * @param string $path
-     * @param string|resource $contents
-     * @param string $mode
-     * @param int|null $chunkSize
-     *
-     * @return array
+     * @param  string|resource  $contents
+     * @param  string  $mode
+     * @param  int|null  $chunkSize
      */
     public function uploadChunked(string $path, $contents, $mode = 'add', $chunkSize = null): array
     {
@@ -452,11 +446,12 @@ class Client
     }
 
     /**
-     * @param int $type
-     * @param Psr7\Stream $stream
-     * @param int $chunkSize
-     * @param \Spatie\Dropbox\UploadSessionCursor|null $cursor
+     * @param  int  $type
+     * @param  Psr7\Stream  $stream
+     * @param  int  $chunkSize
+     * @param  \Spatie\Dropbox\UploadSessionCursor|null  $cursor
      * @return \Spatie\Dropbox\UploadSessionCursor
+     *
      * @throws Exception
      */
     protected function uploadChunk($type, &$stream, $chunkSize, $cursor = null): UploadSessionCursor
@@ -499,10 +494,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
      *
-     * @param string|resource|StreamInterface $contents
-     * @param bool $close
-     *
-     * @return UploadSessionCursor
+     * @param  string|resource|StreamInterface  $contents
      */
     public function uploadSessionStart($contents, bool $close = false): UploadSessionCursor
     {
@@ -523,10 +515,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2
      *
-     * @param string|StreamInterface $contents
-     * @param UploadSessionCursor $cursor
-     * @param bool $close
-     *
+     * @param  string|StreamInterface  $contents
      * @return \Spatie\Dropbox\UploadSessionCursor
      */
     public function uploadSessionAppend($contents, UploadSessionCursor $cursor, bool $close = false): UploadSessionCursor
@@ -547,14 +536,11 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
      *
-     * @param string|resource|StreamInterface $contents
-     * @param \Spatie\Dropbox\UploadSessionCursor $cursor
-     * @param string $path
-     * @param string|array $mode
-     * @param bool $autorename
-     * @param bool $mute
-     *
-     * @return array
+     * @param  string|resource|StreamInterface  $contents
+     * @param  \Spatie\Dropbox\UploadSessionCursor  $cursor
+     * @param  string|array  $mode
+     * @param  bool  $autorename
+     * @param  bool  $mute
      */
     public function uploadSessionFinish($contents, UploadSessionCursor $cursor, string $path, $mode = 'add', $autorename = false, $mute = false): array
     {
@@ -578,8 +564,6 @@ class Client
      * Get Account Info for current authenticated user.
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
-     *
-     * @return array
      */
     public function getAccountInfo(): array
     {
@@ -617,11 +601,7 @@ class Client
     }
 
     /**
-     * @param string $endpoint
-     * @param array $arguments
-     * @param string|resource|StreamInterface $body
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param  string|resource|StreamInterface  $body
      *
      * @throws \Exception
      */
@@ -687,8 +667,6 @@ class Client
     }
 
     /**
-     * @param $contents
-     *
      * @return \GuzzleHttp\Psr7\PumpStream|\GuzzleHttp\Psr7\Stream|StreamInterface
      */
     protected function getStream($contents)

@@ -760,7 +760,6 @@ class ClientTest extends TestCase
                 )
             );
 
-
         $token_provider->expects($this->once())
             ->method('refresh')
             ->with($e)
@@ -1045,7 +1044,7 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @param string $content
+     * @param  string  $content
      * @return Stream
      */
     private function createStreamFromString($content)
