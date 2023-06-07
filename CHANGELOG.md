@@ -2,6 +2,19 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.21.2 - 2023-06-07
+
+### What's Changed
+
+- Bump dependabot/fetch-metadata from 1.3.6 to 1.4.0 by @dependabot in https://github.com/spatie/dropbox-api/pull/115
+- Bump dependabot/fetch-metadata from 1.4.0 to 1.5.0 by @dependabot in https://github.com/spatie/dropbox-api/pull/117
+- Bump dependabot/fetch-metadata from 1.5.0 to 1.5.1 by @dependabot in https://github.com/spatie/dropbox-api/pull/118
+- Fix README badges by @jmsche in https://github.com/spatie/dropbox-api/pull/120
+- Allow graham-campbell/guzzle-factory v7 by @jmsche in https://github.com/spatie/dropbox-api/pull/119
+- Fix PHPUnit errors & failures by @jmsche in https://github.com/spatie/dropbox-api/pull/121
+
+**Full Changelog**: https://github.com/spatie/dropbox-api/compare/1.21.1...1.21.2
+
 ## 1.21.1 - 2023-03-17
 
 ### What's Changed
