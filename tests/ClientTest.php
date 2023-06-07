@@ -972,9 +972,15 @@ class ClientTest extends TestCase
             ->getMock();
 
         if ($expectedResponse) {
-            $mockResponse->expects($this->once())
-                ->method('getBody')
-                ->willReturn($this->createStreamFromString($expectedResponse));
+            if (is_string($expectedResponse)) {
+                $mockResponse->expects($this->once())
+                    ->method('getBody')
+                    ->willReturn($this->createStreamFromString($expectedResponse));
+            } else {
+                $mockResponse->expects($this->once())
+                    ->method('getBody')
+                    ->willReturn($expectedResponse);
+            }
         }
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
