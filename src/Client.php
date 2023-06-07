@@ -361,7 +361,7 @@ class Client
     }
 
     /**
-     * The file should be uploaded in chunks if it size exceeds the 150 MB threshold
+     * The file should be uploaded in chunks if its size exceeds the 150 MB threshold
      * or if the resource size could not be determined (eg. a popen() stream).
      *
      * @param  string|resource  $contents
@@ -624,7 +624,7 @@ class Client
     }
 
     /**
-     * @param  array<string, string>|null  $parameters
+     * @param  array<string, string|bool|array<string>>|null  $parameters
      * @return array<mixed>
      */
     public function rpcEndpointRequest(string $endpoint, array $parameters = null, bool $isRefreshed = false): array
