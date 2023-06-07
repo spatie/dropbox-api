@@ -4,14 +4,8 @@ namespace Spatie\Dropbox;
 
 class InMemoryTokenProvider implements TokenProvider
 {
-    /**
-     * @var string
-     */
-    private $token;
-
-    public function __construct(string $token)
+    public function __construct(private readonly string $token)
     {
-        $this->token = $token;
     }
 
     public function getToken(): string
