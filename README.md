@@ -147,6 +147,8 @@ composer test
 
 Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTING.md) for details.
 
+You can run `composer pint` to run the code style fixer, and `composer phpstan` to run the static analysis.
+
 ## Security
 
 If you've found a bug regarding security please mail [security@spatie.be](mailto:security@spatie.be) instead of using the issue tracker.
