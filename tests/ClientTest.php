@@ -5,6 +5,7 @@ namespace Spatie\Dropbox\Test;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Stream;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -17,7 +18,7 @@ use Spatie\Dropbox\UploadSessionCursor;
 class ClientTest extends TestCase
 {
     /** @test */
-    public function it_can_be_instantiated_without_auth()
+    public function it_can_be_instantiated_without_auth(): void
     {
         $client = new Client();
 
@@ -25,7 +26,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_be_instantiated_with_token()
+    public function it_can_be_instantiated_with_token(): void
     {
         $client = new Client('test_token');
 
@@ -33,7 +34,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_be_instantiated_with_key_and_secret()
+    public function it_can_be_instantiated_with_key_and_secret(): void
     {
         $client = new Client(['test_key', 'test_secret']);
 
@@ -41,7 +42,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_copy_a_file()
+    public function it_can_copy_a_file(): void
     {
         $expectedResponse = [
             '.tag' => 'file',
@@ -68,7 +69,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_search_for_files()
+    public function it_can_search_for_files(): void
     {
         $expectedResponse =
             [
@@ -118,7 +119,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_create_a_folder()
+    public function it_can_create_a_folder(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['name' => 'math']),
@@ -139,7 +140,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_delete_a_folder()
+    public function it_can_delete_a_folder(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['name' => 'math']),
@@ -160,7 +161,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_download_a_file()
+    public function it_can_download_a_file(): void
     {
         $expectedResponse = $this->getMockBuilder(StreamInterface::class)
             ->getMock();
@@ -186,7 +187,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_download_a_folder_as_zip()
+    public function it_can_download_a_folder_as_zip(): void
     {
         $expectedResponse = $this->getMockBuilder(StreamInterface::class)
             ->getMock();
@@ -212,7 +213,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_retrieve_metadata()
+    public function it_can_retrieve_metadata(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['name' => 'math']),
@@ -233,7 +234,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_a_temporary_link()
+    public function it_can_get_a_temporary_link(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode([
@@ -260,7 +261,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_a_thumbnail()
+    public function it_can_get_a_thumbnail(): void
     {
         $expectedResponse = $this->getMockBuilder(StreamInterface::class)
             ->getMock();
@@ -289,7 +290,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_list_a_folder()
+    public function it_can_list_a_folder(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['name' => 'math']),
@@ -311,7 +312,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_continue_to_list_a_folder()
+    public function it_can_continue_to_list_a_folder(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['name' => 'math']),
@@ -335,7 +336,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_move_a_file()
+    public function it_can_move_a_file(): void
     {
         $expectedResponse = [
             '.tag' => 'file',
@@ -363,7 +364,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_upload_a_file()
+    public function it_can_upload_a_file(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['name' => 'answers.txt']),
@@ -391,7 +392,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_start_upload_session()
+    public function it_can_start_upload_session(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['session_id' => 'mockedUploadSessionId']),
@@ -420,7 +421,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_append_to_upload_session()
+    public function it_can_append_to_upload_session(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             null,
@@ -455,7 +456,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_upload_a_file_string_chunked()
+    public function it_can_upload_a_file_string_chunked(): void
     {
         $content = 'chunk0chunk1chunk2rest';
         $mockClient = $this->mock_chunked_upload_client($content, 6);
@@ -467,7 +468,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_upload_a_file_resource_chunked()
+    public function it_can_upload_a_file_resource_chunked(): void
     {
         $content = 'chunk0chunk1chunk2rest';
         $resource = fopen('php://memory', 'r+');
@@ -483,7 +484,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_upload_a_tiny_file_chunked()
+    public function it_can_upload_a_tiny_file_chunked(): void
     {
         $content = 'smallerThenChunkSize';
         $resource = fopen('php://memory', 'r+');
@@ -499,7 +500,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_finish_an_upload_session()
+    public function it_can_finish_an_upload_session(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode([
@@ -544,7 +545,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_account_info()
+    public function it_can_get_account_info(): void
     {
         $expectedResponse = [
             'account_id' => 'dbid:AAH4f99T0taONIb-OurWxbNQ6ywGRopQngc',
@@ -584,7 +585,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_revoke_token()
+    public function it_can_revoke_token(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             null,
@@ -602,13 +603,13 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function content_endpoint_request_can_throw_exception()
+    public function content_endpoint_request_can_throw_exception(): void
     {
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-            ->setMethods(['post'])
+            ->setMethods(['request'])
             ->getMock();
         $mockGuzzle->expects($this->once())
-            ->method('post')
+            ->method('request')
             ->willThrowException(
                 new ClientException(
                     'there was an error',
@@ -625,18 +626,18 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function content_endpoint_request_can_be_refreshed()
+    public function content_endpoint_request_can_be_refreshed(): void
     {
         $token_provider = $this->createConfiguredMock(RefreshableTokenProvider::class, [
             'getToken' => 'test_token',
         ]);
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-            ->setMethods(['post'])
+            ->setMethods(['request'])
             ->getMock();
 
         $mockGuzzle->expects($this->exactly(2))
-            ->method('post')
+            ->method('request')
             ->willThrowException(
                 $e = new ClientException(
                     'there was an error',
@@ -658,7 +659,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function rpc_endpoint_request_can_throw_exception_with_400_status_code()
+    public function rpc_endpoint_request_can_throw_exception_with_400_status_code(): void
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
             ->getMock();
@@ -667,11 +668,11 @@ class ClientTest extends TestCase
             ->willReturn(400);
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-            ->setMethods(['post'])
+            ->setMethods(['request'])
             ->getMock();
 
         $mockGuzzle->expects($this->once())
-            ->method('post')
+            ->method('request')
             ->willThrowException(
                 new ClientException(
                     'there was an error',
@@ -688,7 +689,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function rpc_endpoint_request_can_throw_exception_with_409_status_code()
+    public function rpc_endpoint_request_can_throw_exception_with_409_status_code(): void
     {
         $body = [
             'error' => [
@@ -707,11 +708,11 @@ class ClientTest extends TestCase
             ->willReturn($this->createStreamFromString(json_encode($body)));
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-            ->setMethods(['post'])
+            ->setMethods(['request'])
             ->getMock();
 
         $mockGuzzle->expects($this->once())
-            ->method('post')
+            ->method('request')
             ->willThrowException(
                 new ClientException(
                     'there was an error',
@@ -728,7 +729,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function rpc_endpoint_request_can_be_retried_once()
+    public function rpc_endpoint_request_can_be_retried_once(): void
     {
         $body = [
             'error' => [
@@ -747,11 +748,11 @@ class ClientTest extends TestCase
         ]);
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-            ->setMethods(['post'])
+            ->setMethods(['request'])
             ->getMock();
 
         $mockGuzzle->expects($this->exactly(2))
-            ->method('post')
+            ->method('request')
             ->willThrowException(
                 $e = new ClientException(
                     'there was an error',
@@ -759,7 +760,6 @@ class ClientTest extends TestCase
                     $mockResponse
                 )
             );
-
 
         $token_provider->expects($this->once())
             ->method('refresh')
@@ -774,7 +774,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function rpc_endpoint_request_can_be_retried_with_success()
+    public function rpc_endpoint_request_can_be_retried_with_success(): void
     {
         $errorBody = [
             'error' => [
@@ -802,7 +802,7 @@ class ClientTest extends TestCase
         ]);
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-            ->setMethods(['post'])
+            ->setMethods(['request'])
             ->getMock();
 
         $e = new ClientException(
@@ -812,7 +812,7 @@ class ClientTest extends TestCase
         );
 
         $mockGuzzle->expects($this->exactly(2))
-            ->method('post')
+            ->method('request')
             ->willReturnOnConsecutiveCalls(
                 $this->throwException($e),
                 $successResponse
@@ -829,7 +829,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_create_a_shared_link()
+    public function it_can_create_a_shared_link(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['name' => 'math']),
@@ -850,7 +850,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_create_a_shared_link_with_custom_settings()
+    public function it_can_create_a_shared_link_with_custom_settings(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode(['name' => 'math']),
@@ -878,7 +878,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_list_shared_links()
+    public function it_can_list_shared_links(): void
     {
         $mockGuzzle = $this->mock_guzzle_request(
             json_encode([
@@ -907,7 +907,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_normalize_paths()
+    public function it_can_normalize_paths(): void
     {
         $normalizeFunction = self::getMethod('normalizePath');
 
@@ -926,7 +926,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_the_access_token()
+    public function it_can_get_the_access_token(): void
     {
         $client = new Client('test_token');
 
@@ -934,7 +934,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_set_the_access_token()
+    public function it_can_set_the_access_token(): void
     {
         $client = new Client('test_token');
 
@@ -944,7 +944,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function setting_the_namespace_id_will_add_it_to_the_header()
+    public function setting_the_namespace_id_will_add_it_to_the_header(): void
     {
         $client = new Client('namespace_id');
 
@@ -956,7 +956,7 @@ class ClientTest extends TestCase
     }
 
     /** @test */
-    public function it_can_change_the_endpoint_subdomain()
+    public function it_can_change_the_endpoint_subdomain(): void
     {
         $client = new Client('test_token');
 
@@ -966,7 +966,10 @@ class ClientTest extends TestCase
         $this->assertEquals($endpointFunction->invokeArgs($client, ['api', 'content::files/get_thumbnail_batch']), 'https://content.dropboxapi.com/2/files/get_thumbnail_batch');
     }
 
-    private function mock_guzzle_request($expectedResponse, $expectedEndpoint, $expectedParams)
+    /**
+     * @param  array<mixed>  $expectedParams
+     */
+    private function mock_guzzle_request(string|StreamInterface|null $expectedResponse, string $expectedEndpoint, array $expectedParams): MockObject&GuzzleClient
     {
         $mockResponse = $this->getMockBuilder(ResponseInterface::class)
             ->getMock();
@@ -984,17 +987,17 @@ class ClientTest extends TestCase
         }
 
         $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-            ->setMethods(['post'])
+            ->onlyMethods(['request'])
             ->getMock();
         $mockGuzzle->expects($this->once())
-            ->method('post')
-            ->with($expectedEndpoint, $expectedParams)
+            ->method('request')
+            ->with('POST', $expectedEndpoint, $expectedParams)
             ->willReturn($mockResponse);
 
         return $mockGuzzle;
     }
 
-    private function mock_chunked_upload_client($content, $chunkSize)
+    private function mock_chunked_upload_client(string $content, int $chunkSize): MockObject&Client
     {
         $chunks = str_split($content, $chunkSize);
 
@@ -1032,10 +1035,12 @@ class ClientTest extends TestCase
                 ->willReturn(...$returns);
         }
 
+        \assert($mockClient instanceof Client);
+
         return $mockClient;
     }
 
-    protected static function getMethod($name)
+    protected static function getMethod(string $name): \ReflectionMethod
     {
         $class = new \ReflectionClass('Spatie\Dropbox\Client');
         $method = $class->getMethod($name);
@@ -1044,11 +1049,7 @@ class ClientTest extends TestCase
         return $method;
     }
 
-    /**
-     * @param string $content
-     * @return Stream
-     */
-    private function createStreamFromString($content)
+    private function createStreamFromString(string $content): Stream
     {
         $resource = fopen('php://memory', 'r+');
         fwrite($resource, $content);
