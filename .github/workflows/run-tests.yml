@@ -9,9 +9,9 @@ jobs:
       fail-fast: true
       matrix:
         php: [8.2, 8.1]
-        stability: [prefer-lowest, prefer-stable]
+        stability: [lowest, highest]
 
-    name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
+    name: PHP ${{ matrix.php }} - ${{ matrix.stability }} deps
 
     steps:
       - name: Checkout code
@@ -29,7 +29,9 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Install dependencies
-        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{ matrix.stability }}
 
       - name: Execute tests
         run: vendor/bin/phpunit
