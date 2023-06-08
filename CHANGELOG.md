@@ -2,6 +2,15 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.22.0 - 2023-06-08
+
+### What's Changed
+
+- Cleanup and improvements by @jmsche in https://github.com/spatie/dropbox-api/pull/123
+- Drop support for old PHP versions
+
+**Full Changelog**: https://github.com/spatie/dropbox-api/compare/1.21.2...1.22.0
+
 ## 1.21.2 - 2023-06-07
 
 ### What's Changed
