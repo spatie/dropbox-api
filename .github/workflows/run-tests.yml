@@ -34,4 +34,4 @@ jobs:
           dependency-versions: ${{ matrix.stability }}
 
       - name: Execute tests
-        run: vendor/bin/phpunit
+        run: vendor/bin/pest
