@@ -133,6 +133,25 @@ Here's an example:
 $client->rpcEndpointRequest('content::files/get_thumbnail_batch', $parameters);
 ```
 
+## Dropbopx Team Spaces and Dropbox Business accounts
+
+If you're using [Dropbox Team Spaces](https://developers.dropbox.com/de-de/dbx-team-files-guide) you need to specify the correct namespace to work with. There are several ways to access the team files.
+You can interact directly as authenticated user and select the correct namespace (e.g. `home_namespace_id` or `root_namespace_id`):
+
+```php
+$client = new Spatie\Dropbox\Client( $authorizationToken );
+$client_info = $client->getAccountInfo();
+$client->setNamespaceId( $client_info[ 'root_info' ][ 'root_namespace_id' ] );
+```
+
+Or, depending on your authorization, you can specify a team member id to work as, providing the (dropbox member id, dbmid):
+
+```php
+$client = new Spatie\Dropbox\Client( $authorizationToken, null, 1024*1024*150, 5, 'dbmid:AAA111BBB222CCC333DDD444EEE555FFF66' );
+$client_info = $client->getAccountInfo();
+$client->setNamespaceId( $client_info[ 'root_info' ][ 'root_namespace_id' ] );
+```
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
