@@ -57,7 +57,7 @@ class Client
      */
     public function __construct(
         string|array|TokenProvider|null $accessTokenOrAppCredentials = null,
-        ClientInterface $client = null,
+        ?ClientInterface $client = null,
         int $maxChunkSize = self::MAX_CHUNK_SIZE,
         protected int $maxUploadChunkRetries = 0,
         protected ?string $teamMemberId = null,
@@ -171,7 +171,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
      */
-    public function listSharedLinks(string $path = null, bool $direct_only = false, string $cursor = null): array
+    public function listSharedLinks(?string $path = null, bool $direct_only = false, ?string $cursor = null): array
     {
         $parameters = [
             'path' => $path ? $this->normalizePath($path) : null,
@@ -627,7 +627,7 @@ class Client
      * @param  array<string, string|bool|array<string>>|null  $parameters
      * @return array<mixed>
      */
-    public function rpcEndpointRequest(string $endpoint, array $parameters = null, bool $isRefreshed = false): array
+    public function rpcEndpointRequest(string $endpoint, ?array $parameters = null, bool $isRefreshed = false): array
     {
         try {
             $options = ['headers' => $this->getHeaders()];
