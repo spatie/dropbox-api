@@ -51,9 +51,9 @@ class Client
 
     /**
      * @param  string|array<string>|TokenProvider|null  $accessTokenOrAppCredentials
-     * @param  int  $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
-     * @param  int  $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
-     * @param  ?string  $teamMemberId The team member ID to be specified for Dropbox business accounts
+     * @param  int  $maxChunkSize  Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
+     * @param  int  $maxUploadChunkRetries  How many times to retry an upload session start or append after RequestException.
+     * @param  ?string  $teamMemberId  The team member ID to be specified for Dropbox business accounts
      */
     public function __construct(
         string|array|TokenProvider|null $accessTokenOrAppCredentials = null,

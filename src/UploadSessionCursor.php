@@ -13,6 +13,5 @@ class UploadSessionCursor
          * The amount of data that has been uploaded so far. We use this to make sure upload data isn't lost or duplicated in the event of a network error.
          */
         public int $offset = 0,
-    ) {
-    }
+    ) {}
 }

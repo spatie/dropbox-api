@@ -13,7 +13,7 @@ use Spatie\Dropbox\RefreshableTokenProvider;
 use Spatie\Dropbox\UploadSessionCursor;
 
 it('can be instantiated without auth', function () {
-    $client = new Client();
+    $client = new Client;
 
     expect($client)->toBeInstanceOf(Client::class);
 });
