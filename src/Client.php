@@ -394,7 +394,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload
      *
-     * @param  string|resource  $contents
+     * @param  string|resource $contents
      * @return array<mixed>
      */
     public function upload(string $path, mixed $contents, string $mode = 'add', bool $autorename = false): array
@@ -438,8 +438,13 @@ class Client
 
         $cursor = $this->uploadChunk(self::UPLOAD_SESSION_START, $stream, $chunkSize, null);
 
-        while (! $stream->eof()) {
+        while (!$stream->eof()) {
+            $currentPos = $stream->tell();
             $cursor = $this->uploadChunk(self::UPLOAD_SESSION_APPEND, $stream, $chunkSize, $cursor);
+            // If no progress was made, break to prevent an endless loop.
+            if ($stream->tell() === $currentPos) {
+                break;
+            }
         }
 
         return $this->uploadSessionFinish('', $cursor, $path, $mode);
