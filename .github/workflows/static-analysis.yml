@@ -1,16 +1,18 @@
 name: Static Analysis
 
-on: [push, pull_request]
+on:
+  - push
+  - pull_request
 
 jobs:
   phpstan:
     name: PHPStan (PHP ${{ matrix.php-version }})
+
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        php-version:
-          - '8.2'
+        php-version: ['8.2', '8.3', '8.4', '8.5']
 
     steps:
       - name: Checkout code
@@ -27,4 +29,4 @@ jobs:
         uses: ramsey/composer-install@v3
 
       - name: Run PHPStan
-        run: 'vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr'
+        run: vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr
