@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Spatie\Dropbox\Client;
-use Spatie\Dropbox\UploadSessionCursor;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -18,8 +17,7 @@ abstract class TestCase extends BaseTestCase
      */
     public function mockGuzzleRequest(string|StreamInterface|null $expectedResponse, string $expectedEndpoint, array $expectedParams): MockObject&GuzzleClient
     {
-        $mockResponse = $this->getMockBuilder(ResponseInterface::class)
-            ->getMock();
+        $mockResponse = $this->createMock(ResponseInterface::class);
 
         if ($expectedResponse) {
             if (is_string($expectedResponse)) {
@@ -33,58 +31,13 @@ abstract class TestCase extends BaseTestCase
             }
         }
 
-        $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-            ->onlyMethods(['request'])
-            ->getMock();
+        $mockGuzzle = $this->createMock(GuzzleClient::class);
         $mockGuzzle->expects($this->once())
             ->method('request')
             ->with('POST', $expectedEndpoint, $expectedParams)
             ->willReturn($mockResponse);
 
         return $mockGuzzle;
-    }
-
-    public function mockChunkedUploadClient(string $content, int $chunkSize): MockObject&Client
-    {
-        $chunks = str_split($content, $chunkSize);
-
-        $mockClient = $this->getMockBuilder(Client::class)
-            ->setConstructorArgs(['test_token'])
-            ->setMethodsExcept(['uploadChunked', 'upload'])
-            ->getMock();
-
-        $mockClient->expects($this->once())
-            ->method('uploadSessionStart')
-            ->with(array_shift($chunks))
-            ->willReturn(new UploadSessionCursor('mockedSessionId', $chunkSize));
-
-        $mockClient->expects($this->once())
-            ->method('uploadSessionFinish')
-            ->with('', $this->anything(), 'Homework/math/answers.txt', 'add')
-            ->willReturn(['name' => 'answers.txt']);
-
-        $remainingChunks = count($chunks);
-        $offset = $chunkSize;
-
-        if ($remainingChunks) {
-            $withs = [];
-            $returns = [];
-
-            foreach ($chunks as $chunk) {
-                $offset += $chunkSize;
-                $withs[] = [$chunk, $this->anything()];
-                $returns[] = new UploadSessionCursor('mockedSessionId', $offset);
-            }
-
-            $mockClient->expects($this->exactly($remainingChunks))
-                ->method('uploadSessionAppend')
-                ->withConsecutive(...$withs)
-                ->willReturn(...$returns);
-        }
-
-        \assert($mockClient instanceof Client);
-
-        return $mockClient;
     }
 
     public function createStreamFromString(string $content): Stream
