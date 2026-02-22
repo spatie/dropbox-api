@@ -141,8 +141,7 @@ it('can delete a folder', function () {
 });
 
 it('can download a file', function () {
-    $expectedResponse = $this->getMockBuilder(StreamInterface::class)
-        ->getMock();
+    $expectedResponse = $this->createMock(StreamInterface::class);
     $expectedResponse->expects($this->once())
         ->method('isReadable')
         ->willReturn(true);
@@ -165,8 +164,7 @@ it('can download a file', function () {
 });
 
 it('can download a folder as zip', function () {
-    $expectedResponse = $this->getMockBuilder(StreamInterface::class)
-        ->getMock();
+    $expectedResponse = $this->createMock(StreamInterface::class);
     $expectedResponse->expects($this->once())
         ->method('isReadable')
         ->willReturn(true);
@@ -231,8 +229,7 @@ it('can get a temporary link', function () {
 });
 
 it('can get a thumbnail', function () {
-    $expectedResponse = $this->getMockBuilder(StreamInterface::class)
-        ->getMock();
+    $expectedResponse = $this->createMock(StreamInterface::class);
 
     $mockGuzzle = $this->mockGuzzleRequest(
         $expectedResponse,
@@ -404,38 +401,6 @@ it('can append to upload session', function () {
         ->and($uploadSessionCursor->offset)->toBe(32);
 });
 
-it('can upload a file string chunked', function () {
-    $content = 'chunk0chunk1chunk2rest';
-    $mockClient = $this->mockChunkedUploadClient($content, 6);
-
-    expect($mockClient->uploadChunked('Homework/math/answers.txt', $content, 'add', 6))
-        ->toBe(['name' => 'answers.txt']);
-})->skip('Must fix method "mockChunkedUploadClient".');
-
-it('can upload a file resource chunked', function () {
-    $content = 'chunk0chunk1chunk2rest';
-    $resource = fopen('php://memory', 'r+');
-    fwrite($resource, $content);
-    rewind($resource);
-
-    $mockClient = $this->mockChunkedUploadClient($content, 6);
-
-    expect($mockClient->uploadChunked('Homework/math/answers.txt', $resource, 'add', 6))
-        ->toBe(['name' => 'answers.txt']);
-})->skip('Must fix method "mockChunkedUploadClient".');
-
-it('can upload a tiny file chunked', function () {
-    $content = 'smallerThenChunkSize';
-    $resource = fopen('php://memory', 'r+');
-    fwrite($resource, $content);
-    rewind($resource);
-
-    $mockClient = $this->mockChunkedUploadClient($content, 21);
-
-    expect($mockClient->uploadChunked('Homework/math/answers.txt', $resource, 'add', 21))
-        ->toBe(['name' => 'answers.txt']);
-})->skip('Must fix method "mockChunkedUploadClient".');
-
 it('can finish an upload session', function () {
     $mockGuzzle = $this->mockGuzzleRequest(
         json_encode([
@@ -531,15 +496,13 @@ it('can revoke token', function () {
 });
 
 test('content endpoint request can throw exception', function () {
-    $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-        ->onlyMethods(['request'])
-        ->getMock();
+    $mockGuzzle = $this->createMock(GuzzleClient::class);
     $mockGuzzle->expects($this->once())
         ->method('request')
         ->willThrowException(new ClientException(
             'there was an error',
-            $this->getMockBuilder(RequestInterface::class)->getMock(),
-            $this->getMockBuilder(ResponseInterface::class)->getMock(),
+            $this->createMock(RequestInterface::class),
+            $this->createMock(ResponseInterface::class),
         ));
 
     $client = new Client('test_token', $mockGuzzle);
@@ -552,16 +515,14 @@ test('contact endpoint request can be refreshed', function () {
         'getToken' => 'test_token',
     ]);
 
-    $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-        ->onlyMethods(['request'])
-        ->getMock();
+    $mockGuzzle = $this->createMock(GuzzleClient::class);
 
     $mockGuzzle->expects($this->exactly(2))
         ->method('request')
         ->willThrowException($e = new ClientException(
             'there was an error',
-            $this->getMockBuilder(RequestInterface::class)->getMock(),
-            $this->getMockBuilder(ResponseInterface::class)->getMock(),
+            $this->createMock(RequestInterface::class),
+            $this->createMock(ResponseInterface::class),
         ));
 
     $tokenProvider->expects($this->once())
@@ -575,21 +536,17 @@ test('contact endpoint request can be refreshed', function () {
 })->throws(ClientException::class);
 
 test('rpc endpoint request can throw exception with 400 status code', function () {
-    $mockResponse = $this->getMockBuilder(ResponseInterface::class)
-        ->getMock();
-    $mockResponse->expects($this->any())
-        ->method('getStatusCode')
-        ->willReturn(400);
+    $mockResponse = $this->createConfiguredMock(ResponseInterface::class, [
+        'getStatusCode' => 400,
+    ]);
 
-    $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-        ->onlyMethods(['request'])
-        ->getMock();
+    $mockGuzzle = $this->createMock(GuzzleClient::class);
 
     $mockGuzzle->expects($this->once())
         ->method('request')
         ->willThrowException(new ClientException(
             'there was an error',
-            $this->getMockBuilder(RequestInterface::class)->getMock(),
+            $this->createMock(RequestInterface::class),
             $mockResponse,
         ));
 
@@ -606,24 +563,18 @@ test('rpc endpoint request can throw exception with 409 status code', function (
         'error_summary' => 'Human readable error code',
     ];
 
-    $mockResponse = $this->getMockBuilder(ResponseInterface::class)
-        ->getMock();
-    $mockResponse->expects($this->any())
-        ->method('getStatusCode')
-        ->willReturn(409);
-    $mockResponse->expects($this->any())
-        ->method('getBody')
-        ->willReturn($this->createStreamFromString(json_encode($body)));
+    $mockResponse = $this->createConfiguredMock(ResponseInterface::class, [
+        'getStatusCode' => 409,
+        'getBody' => $this->createStreamFromString(json_encode($body)),
+    ]);
 
-    $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-        ->onlyMethods(['request'])
-        ->getMock();
+    $mockGuzzle = $this->createMock(GuzzleClient::class);
 
     $mockGuzzle->expects($this->once())
         ->method('request')
         ->willThrowException(new ClientException(
             'there was an error',
-            $this->getMockBuilder(RequestInterface::class)->getMock(),
+            $this->createMock(RequestInterface::class),
             $mockResponse,
         ));
 
@@ -649,15 +600,13 @@ test('rpc endpoint request can be retried once', function () {
         'getBody' => $this->createStreamFromString(json_encode($body)),
     ]);
 
-    $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-        ->onlyMethods(['request'])
-        ->getMock();
+    $mockGuzzle = $this->createMock(GuzzleClient::class);
 
     $mockGuzzle->expects($this->exactly(2))
         ->method('request')
         ->willThrowException($e = new ClientException(
             'there was an error',
-            $this->getMockBuilder(RequestInterface::class)->getMock(),
+            $this->createMock(RequestInterface::class),
             $mockResponse,
         ));
 
@@ -697,22 +646,25 @@ test('rpc endpoint request can be retried with success', function () {
         'getBody' => $this->createStreamFromString(json_encode($successBody)),
     ]);
 
-    $mockGuzzle = $this->getMockBuilder(GuzzleClient::class)
-        ->onlyMethods(['request'])
-        ->getMock();
+    $mockGuzzle = $this->createMock(GuzzleClient::class);
 
     $e = new ClientException(
         'there was an error',
-        $this->getMockBuilder(RequestInterface::class)->getMock(),
+        $this->createMock(RequestInterface::class),
         $errorResponse,
     );
 
+    $callCount = 0;
     $mockGuzzle->expects($this->exactly(2))
         ->method('request')
-        ->willReturnOnConsecutiveCalls(
-            $this->throwException($e),
-            $successResponse,
-        );
+        ->willReturnCallback(function () use (&$callCount, $e, $successResponse) {
+            $callCount++;
+            if ($callCount === 1) {
+                throw $e;
+            }
+
+            return $successResponse;
+        });
 
     $tokenProvider->expects($this->once())
         ->method('refresh')
