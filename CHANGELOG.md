@@ -2,6 +2,15 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.24.0 - 2026-02-22
+
+### What's Changed
+
+- Upgrade to Pest 4 / PHPUnit 12
+- Add PHP 8.3, 8.4 and 8.5 to CI matrix
+- Remove deprecated PHPUnit APIs (getMockBuilder, coverage XML config)
+- Analyze only src with PHPStan (remove test analysis)
+
 ## 1.23.0 - 2025-01-06
 
 ### What's Changed
