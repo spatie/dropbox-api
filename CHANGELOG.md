@@ -2,6 +2,21 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.24.1 - 2026-06-15
+
+### What's Changed
+
+* Bump ramsey/composer-install from 3 to 4 by @dependabot[bot] in https://github.com/spatie/dropbox-api/pull/154
+* Bump dependabot/fetch-metadata from 2.5.0 to 3.0.0 by @dependabot[bot] in https://github.com/spatie/dropbox-api/pull/155
+* Bump dependabot/fetch-metadata from 3.0.0 to 3.1.0 by @dependabot[bot] in https://github.com/spatie/dropbox-api/pull/156
+* Allow starting upload sessions with empty content by @meistertigran in https://github.com/spatie/dropbox-api/pull/157
+
+### New Contributors
+
+* @meistertigran made their first contribution in https://github.com/spatie/dropbox-api/pull/157
+
+**Full Changelog**: https://github.com/spatie/dropbox-api/compare/1.24.0...1.24.1
+
 ## 1.24.0 - 2026-02-22
 
 ### What's Changed
