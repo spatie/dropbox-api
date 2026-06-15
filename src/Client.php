@@ -495,7 +495,11 @@ class Client
         $arguments = compact('close');
 
         $response = json_decode(
-            $this->contentEndpointRequest('files/upload_session/start', $arguments, $contents)->getBody(),
+            $this->contentEndpointRequest(
+                'files/upload_session/start',
+                $arguments,
+                ($contents === '') ? null : $contents
+            )->getBody(),
             true
         );
 

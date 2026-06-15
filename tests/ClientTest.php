@@ -370,6 +370,32 @@ it('can start upload session', function () {
         ->and($uploadSessionCursor->offset)->toBe(23);
 });
 
+it('can start upload session with empty content', function () {
+    $mockGuzzle = $this->mockGuzzleRequest(
+        json_encode(['session_id' => 'mockedUploadSessionId']),
+        'https://content.dropboxapi.com/2/files/upload_session/start',
+        [
+            'headers' => [
+                'Authorization' => 'Bearer test_token',
+                'Dropbox-API-Arg' => json_encode(
+                    [
+                        'close' => false,
+                    ]
+                ),
+                'Content-Type' => 'application/octet-stream',
+            ],
+            'body' => null,
+        ],
+    );
+
+    $client = new Client('test_token', $mockGuzzle);
+    $uploadSessionCursor = $client->uploadSessionStart('');
+
+    expect($uploadSessionCursor)->toBeInstanceOf(UploadSessionCursor::class)
+        ->and($uploadSessionCursor->session_id)->toBe('mockedUploadSessionId')
+        ->and($uploadSessionCursor->offset)->toBe(0);
+});
+
 it('can append to upload session', function () {
     $mockGuzzle = $this->mockGuzzleRequest(
         null,
