@@ -1,6 +1,6 @@
 <?php
 
-/** @var \Spatie\Dropbox\Tests\TestCase $this */
+/** @var TestCase $this */
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
@@ -10,6 +10,7 @@ use Psr\Http\Message\StreamInterface;
 use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
 use Spatie\Dropbox\RefreshableTokenProvider;
+use Spatie\Dropbox\Tests\TestCase;
 use Spatie\Dropbox\UploadSessionCursor;
 
 it('can be instantiated without auth', function () {

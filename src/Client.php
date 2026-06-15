@@ -598,7 +598,7 @@ class Client
      * @param  array<string, mixed>  $arguments
      * @param  string|resource|StreamInterface  $body
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function contentEndpointRequest(string $endpoint, array $arguments, mixed $body = '', bool $isRefreshed = false): ResponseInterface
     {
