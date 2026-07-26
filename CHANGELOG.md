@@ -2,6 +2,19 @@
 
 All notable changes to `dropbox-api` will be documented in this file
 
+## 1.25.0 - 2026-07-26
+
+### What's Changed
+
+* Bump actions/checkout from 4 to 7 by @dependabot[bot] in https://github.com/spatie/dropbox-api/pull/158
+* Fix infinite loop in uploadChunked() when the transport never reads past the end of the stream by @geisi in https://github.com/spatie/dropbox-api/pull/160
+
+### New Contributors
+
+* @geisi made their first contribution in https://github.com/spatie/dropbox-api/pull/160
+
+**Full Changelog**: https://github.com/spatie/dropbox-api/compare/1.24.1...1.25.0
+
 ## 1.24.1 - 2026-06-15
 
 ### What's Changed
