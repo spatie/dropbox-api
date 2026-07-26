@@ -435,10 +435,11 @@ class Client
         }
 
         $stream = $this->getStream($contents);
+        $size = $stream->getSize();
 
         $cursor = $this->uploadChunk(self::UPLOAD_SESSION_START, $stream, $chunkSize, null);
 
-        while (! $stream->eof()) {
+        while ($size === null ? ! $stream->eof() : $stream->tell() < $size) {
             $cursor = $this->uploadChunk(self::UPLOAD_SESSION_APPEND, $stream, $chunkSize, $cursor);
         }
 

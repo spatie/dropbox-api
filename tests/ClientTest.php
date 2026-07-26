@@ -4,6 +4,9 @@
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -822,4 +825,47 @@ it('can change the endpoint subdomain', function () {
         ->toBe('https://api.dropboxapi.com/2/files/delete')
         ->and($endpointFunction->invokeArgs($client, ['api', 'content::files/get_thumbnail_batch']))
         ->toBe('https://content.dropboxapi.com/2/files/get_thumbnail_batch');
+});
+
+it('completes a chunked upload when the transport never reads past the end of the stream', function () {
+    $mock = new MockHandler([
+        new Response(200, [], json_encode(['session_id' => 'mockedUploadSessionId'])),
+        new Response(200, [], 'null'),
+        new Response(200, [], 'null'),
+        new Response(200, [], json_encode(['name' => 'answers.txt'])),
+    ]);
+
+    $stack = HandlerStack::create($mock);
+
+    // Consume every request body exactly to its declared size, the way
+    // Guzzle >= 7.15 and libcurl >= 8.7 do. feof() on the source stream is
+    // then never set, because no read ever attempts to move past its end.
+    $stack->push(fn (callable $handler) => function (RequestInterface $request, array $options) use ($handler) {
+        $body = $request->getBody();
+        $declared = $body->getSize();
+        $read = 0;
+
+        while ($declared !== null && $read < $declared) {
+            $data = $body->read(min(8192, $declared - $read));
+
+            if ($data === '') {
+                break;
+            }
+
+            $read += strlen($data);
+        }
+
+        return $handler($request, $options);
+    });
+
+    $client = new Client('test_token', new GuzzleClient(['handler' => $stack]));
+
+    $resource = fopen('php://memory', 'r+');
+    fwrite($resource, str_repeat('x', 2500));
+    rewind($resource);
+
+    $metadata = $client->uploadChunked('Homework/math/answers.txt', $resource, 'add', 1000);
+
+    expect($metadata)->toBe(['name' => 'answers.txt', '.tag' => 'file'])
+        ->and($mock->count())->toBe(0);
 });
