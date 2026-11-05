@@ -27,6 +27,9 @@ jobs:
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@v4
+        with:
+          # Pest's compatible ParaTest releases cap PHP at 8.5.
+          composer-options: ${{ matrix.php-version == '8.6' && '--ignore-platform-req=php+' || '' }}
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr
