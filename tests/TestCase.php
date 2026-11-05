@@ -52,7 +52,6 @@ abstract class TestCase extends BaseTestCase
     {
         $class = new \ReflectionClass(Client::class);
         $method = $class->getMethod($name);
-        $method->setAccessible(true);
 
         return $method;
     }
