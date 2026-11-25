@@ -27,8 +27,7 @@
     "require": {
         "php": "^8.1",
         "ext-json": "*",
-        "graham-campbell/guzzle-factory": "^4.0.2|^5.0|^6.0|^7.0",
-        "guzzlehttp/guzzle": "^6.2|^7.0"
+        "guzzlehttp/guzzle": "^7.16.3|^8.5.2"
     },
     "require-dev": {
         "laravel/pint": "^1.10.1",

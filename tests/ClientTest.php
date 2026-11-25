@@ -4,8 +4,10 @@
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -32,6 +34,31 @@ it('can be instantiated with key and secret', function () {
     $client = new Client(['test_key', 'test_secret']);
 
     expect($client)->toBeInstanceOf(Client::class);
+});
+
+it('retries rate limits, server errors and connection failures with exponential backoff', function () {
+    $client = new Client('test_token');
+    $guzzle = (new ReflectionProperty(Client::class, 'client'))->getValue($client);
+    $handler = $guzzle->getConfig('handler');
+
+    $mock = new MockHandler([
+        new Response(429),
+        new Response(503),
+        new ConnectException('Connection failed', new Request('POST', 'https://api.dropboxapi.com')),
+        new Response(200, [], '{"ok":true}'),
+    ]);
+
+    $delays = [];
+    $handler->setHandler(function (RequestInterface $request, array $options) use ($mock, &$delays) {
+        $delays[] = $options['delay'] ?? 0;
+        unset($options['delay']);
+
+        return $mock($request, $options);
+    });
+
+    expect($client->rpcEndpointRequest('testing/endpoint'))->toBe(['ok' => true])
+        ->and($delays)->toBe([0, 2000, 4000, 8000])
+        ->and($mock->count())->toBe(0);
 });
 
 it('can copy a file', function () {

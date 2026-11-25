@@ -12,9 +12,10 @@ jobs:
       fail-fast: true
       matrix:
         php: ['8.3', '8.4', '8.5', '8.6']
+        guzzle: ['7', '8']
         stability: [lowest, highest]
 
-    name: PHP ${{ matrix.php }} - ${{ matrix.stability }} deps
+    name: PHP ${{ matrix.php }} - Guzzle ${{ matrix.guzzle }} - ${{ matrix.stability }} deps
 
     steps:
       - name: Checkout code
@@ -35,6 +36,7 @@ jobs:
         uses: ramsey/composer-install@v4
         with:
           dependency-versions: ${{ matrix.stability }}
+          composer-options: --with=guzzlehttp/guzzle:^${{ matrix.guzzle }}.0
 
       - name: Execute tests
         run: vendor/bin/pest
