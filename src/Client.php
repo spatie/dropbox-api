@@ -3,14 +3,18 @@
 namespace Spatie\Dropbox;
 
 use Exception;
-use GrahamCampbell\GuzzleFactory\GuzzleFactory;
+use GuzzleHttp\BodySummarizer;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\PumpStream;
 use GuzzleHttp\Psr7\StreamWrapper;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Spatie\Dropbox\Exceptions\BadRequest;
@@ -72,9 +76,24 @@ class Client
             $this->tokenProvider = new InMemoryTokenProvider($accessTokenOrAppCredentials);
         }
 
-        $this->client = $client ?? new GuzzleClient(['handler' => GuzzleFactory::handler()]);
+        $this->client = $client ?? $this->createDefaultClient();
 
         $this->maxChunkSize = ($maxChunkSize < self::MAX_CHUNK_SIZE ? max($maxChunkSize, 1) : self::MAX_CHUNK_SIZE);
+    }
+
+    private function createDefaultClient(): ClientInterface
+    {
+        $handler = HandlerStack::create();
+        $handler->remove('http_errors');
+        $handler->unshift(Middleware::httpErrors(new BodySummarizer(250)), 'http_errors');
+        $handler->push(Middleware::retry(
+            static fn (int $retries, RequestInterface $request, ?ResponseInterface $response, mixed $exception): bool => $retries < 3
+                && ($exception instanceof ConnectException
+                    || ($response !== null && ($response->getStatusCode() === 429 || $response->getStatusCode() >= 500))),
+            static fn (int $retries): int => (int) (2 ** $retries * 1000),
+        ), 'retry');
+
+        return new GuzzleClient(['handler' => $handler]);
     }
 
     /**
